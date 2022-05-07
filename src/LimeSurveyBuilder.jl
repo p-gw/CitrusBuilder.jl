@@ -1,5 +1,9 @@
 module LimeSurveyBuilder
 
-# Write your package code here.
+using Base: @kwdef
+
+export survey, question_group
+
+include("SurveyStructure.jl")
 
 end
