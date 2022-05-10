@@ -1,6 +1,10 @@
 abstract type AbstractSurveyComponent end
 abstract type AbstractQuestion <: AbstractSurveyComponent end
 
+id(x::AbstractSurveyComponent) = x.id
+children(x::AbstractSurveyComponent) = x.children
+
+id(x::AbstractQuestion) = x.core.code
 code(x::AbstractQuestion) = x.core.code
 question(x::AbstractQuestion) = x.core.question
 
@@ -29,6 +33,7 @@ end
 question_group(; kwargs...) = QuestionGroup(; kwargs...)
 question_group(children::Function; kwargs...) = QuestionGroup(; kwargs..., children=tovector(children()))
 
+
 function tovector(child::T)::Vector{T} where {T<:AbstractSurveyComponent}
     return [child]
 end
@@ -36,6 +41,8 @@ end
 function tovector(children)::Vector{<:AbstractSurveyComponent}
     return [child for child in children]
 end
+
+tovector(::Nothing) = return AbstractQuestion[]
 
 @kwdef mutable struct Survey
     # general settings
@@ -50,6 +57,8 @@ end
 survey(; kwargs...) = Survey(; kwargs...)
 survey(children; kwargs...) = Survey(; kwargs..., children=tovector(children()))
 
+prefix(i, n) = i == n ? "└──" : "├──"
+
 function Base.show(io::IO, s::Survey)
     groups = s.children
     n_groups = length(groups)
@@ -58,12 +67,36 @@ function Base.show(io::IO, s::Survey)
     println(io, "Survey with $n_groups groups and $n_questions questions.")
     println(io, "$(s.title) (id: $(s.id))")
     for (i, g) in enumerate(groups)
-        prefix = i == n_groups ? "└──" : "├──"
-        println(io, "$prefix $(g.title) (id: $(g.id))")
+        p = prefix(i, n_groups)
+        println(io, "$p $(g.title) (id: $(g.id))")
 
         for (j, q) in enumerate(g.children)
-            prefix = j == length(g.children) ? "└──" : "├──"
-            println(io, "    $prefix $(question(q)) (code: $(code(q)))")
+            p = prefix(j, length(g.children))
+            println(io, "    $p $(question(q)) (code: $(code(q)))")
+
+            if q isa ArrayQuestion
+                for (k, sq) in enumerate(q.subquestions)
+                    p = prefix(k, length(q.subquestions))
+                    println(io, "        $p $(sq.subquestion) (code: $(sq.code))")
+                end
+            end
         end
     end
+end
+
+
+
+function Base.prepend!(c::Union{Survey,QuestionGroup}, item)
+    prepend!(c.children, tovector(item))
+    return item
+end
+
+function Base.append!(c::Union{Survey,QuestionGroup}, item)
+    append!(c.children, tovector(item))
+    return item
+end
+
+function Base.insert!(c::Union{Survey,QuestionGroup}, i::Integer, item)
+    insert!(c.children, i, item)
+    return item
 end
