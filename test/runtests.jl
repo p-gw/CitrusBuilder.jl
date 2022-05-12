@@ -1,6 +1,8 @@
+using Dates
 using LimeSurveyBuilder
 using Random
 using Test
+
 
 @testset "LimeSurveyBuilder.jl" begin
     @testset "Question Code Validation" begin
@@ -170,6 +172,129 @@ using Test
             for (i, option) in enumerate(point_scale(n).options)
                 @test option.code == "A$i"
                 @test option.option == "$i"
+            end
+        end
+    end
+
+    @testset "Question Constructors" begin
+        @testset "Mask Questions" begin
+            @testset "Date Select" begin
+                # check defaults
+                ds = date_select(code="q1")
+                @test isnothing(ds.minimum)
+                @test isnothing(ds.maximum)
+                @test ds.type == "default"
+                @test ds.month_style == "default"
+
+                ds = date_select(
+                    code="q1",
+                    minimum=Date(1900, 1, 1),
+                    maximum=today(),
+                    type="radio",
+                    month_style="long"
+                )
+                @test ds.minimum == Date(1900, 1, 1)
+                @test ds.maximum == today()
+                @test ds.type == "radio"
+                @test ds.month_style == "long"
+            end
+            @testset "File Upload" begin
+                f = file_upload(code="q1")
+                @test f.show_title == true
+                @test f.show_comment == true
+                @test f.max_filesize == 10240
+                @test f.min_files == 0
+                @test f.max_files == 1
+                @test f.allowed_filetypes == ["png", "gif", "doc", "odt", "jpg", "pdf", "png"]
+
+                f = file_upload(
+                    code="q1",
+                    show_title=false,
+                    show_comment=false,
+                    max_filesize=100,
+                    min_files=10,
+                    max_files=20,
+                    allowed_filetypes="jpg"
+                )
+                @test f.show_title == false
+                @test f.show_comment == false
+                @test f.max_filesize == 100
+                @test f.min_files == 10
+                @test f.max_files == 20
+                @test f.allowed_filetypes == "jpg"
+
+                @test_throws ErrorException file_upload(code="q1", max_files=1, min_files=10)
+                @test_throws ErrorException file_upload(code="q1", max_filesize=-10)
+            end
+
+            @testset "Gender Select" begin
+                g = gender_select(code="q1")
+                @test g.type == "button"
+
+                g = gender_select(code="q1", type="radio")
+                @test g.type == "radio"
+            end
+
+            @testset "Numerical Inputs" begin
+                # # single
+                n = numerical_input(code="q1")
+                @test isnothing(n.minimum) == true
+                @test isnothing(n.maximum) == true
+                @test isnothing(n.maximum_chars) == true
+                @test n.integer_only == false
+
+                n = numerical_input(
+                    code="q1",
+                    minimum=0,
+                    maximum=120,
+                    maximum_chars=20,
+                    integer_only=true
+                )
+                @test n.minimum == 0
+                @test n.maximum == 120
+                @test n.maximum_chars == 20
+                @test n.integer_only == true
+
+                @test_throws ErrorException numerical_input(code="q1", minimum=0.0, maximum=10.0, integer_only=true)
+                @test_throws ErrorException numerical_input(code="q1", minimum=10, maximum=0)
+
+                # multiple
+                n = multiple_numerical_input(code="q1") do
+                    subquestion(code="sq1", subquestion=""),
+                    subquestion(code="sq2", subquestion="")
+                end
+                @test length(n.subquestions) == 2
+                @test isnothing(n.minimum) == true
+                @test isnothing(n.maximum) == true
+                @test isnothing(n.maximum_chars) == true
+                @test isnothing(n.minimum_sum) == true
+                @test isnothing(n.maximum_sum) == true
+                @test n.integer_only == false
+
+                n = multiple_numerical_input(
+                    code="q1",
+                    minimum=0,
+                    maximum=10,
+                    maximum_chars=100,
+                    minimum_sum=0,
+                    maximum_sum=50,
+                    integer_only=true
+                ) do
+                    subquestion(code="sq1", subquestion=""),
+                    subquestion(code="sq2", subquestion=""),
+                    subquestion(code="sq3", subquestion="")
+                end
+                @test length(n.subquestions) == 3
+                @test n.minimum == 0
+                @test n.maximum == 10
+                @test n.maximum_chars == 100
+                @test n.minimum_sum == 0
+                @test n.maximum_sum == 50
+                @test n.integer_only == true
+
+                @test_throws ErrorException multiple_numerical_input(code="q1", minimum=10, maximum=0)
+                @test_throws ErrorException multiple_numerical_input(code="q1", minimum_sum=10, maximum_sum=0)
+                @test_throws ErrorException multiple_numerical_input(code="q1", minimum_sum=10.0, maximum_sum=0.0)
             end
         end
     end

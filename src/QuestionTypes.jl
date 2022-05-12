@@ -245,3 +245,161 @@ function array_ten_point_choice_question(children::Function; kwargs...)
         "radio"
     )
 end
+
+# mask questions
+abstract type AbstractMaskQuestion <: AbstractQuestion end
+
+struct DateSelect <: AbstractMaskQuestion
+    core::QuestionCore
+    minimum
+    maximum
+    type::String
+    month_style::String
+end
+
+function date_select(; minimum=nothing, maximum=nothing, type="default", month_style="default", kwargs...)
+    return DateSelect(
+        QuestionCore(; kwargs...),
+        minimum,
+        maximum,
+        type,
+        month_style
+    )
+end
+
+struct FileUpload <: AbstractMaskQuestion
+    core::QuestionCore
+    show_title::Bool
+    show_comment::Bool
+    max_filesize::Integer
+    min_files::Integer
+    max_files::Integer
+    allowed_filetypes::Union{AbstractString,Vector{<:AbstractString}}
+    function FileUpload(core, show_title, show_comment, max_filesize, min_files, max_files, allowed_filetypes)
+        min_files <= max_files || error("Maximum number of files must be greater than minimum number of files.")
+        max_filesize >= 0 || error("Maximum filesize must be non-negative.")
+        new(core, show_title, show_comment, max_filesize, min_files, max_files, allowed_filetypes)
+    end
+end
+
+function file_upload(; show_title=true, show_comment=true, max_filesize=10240, min_files=0, max_files=1, allowed_filetypes=["png", "gif", "doc", "odt", "jpg", "pdf", "png"], kwargs...)
+    return FileUpload(
+        QuestionCore(; kwargs...),
+        show_title,
+        show_comment,
+        max_filesize,
+        min_files,
+        max_files,
+        allowed_filetypes
+    )
+end
+
+struct GenderSelect <: AbstractMaskQuestion
+    core::QuestionCore
+    type::String
+end
+
+function gender_select(; type="button", kwargs...)
+    return GenderSelect(
+        QuestionCore(; kwargs...),
+        type
+    )
+end
+
+struct LanguageSwitch <: AbstractMaskQuestion
+    core::QuestionCore
+end
+
+language_switch(; kwargs...) = LanguageSwitch(QuestionCore(; kwargs...))
+
+struct NumericalInput <: AbstractMaskQuestion
+    core::QuestionCore
+    minimum::Union{Nothing,<:Real}
+    maximum::Union{Nothing,<:Real}
+    maximum_chars::Union{Nothing,Integer}
+    integer_only::Bool
+    function NumericalInput(core, minimum, maximum, maximum_chars, integer_only)
+        if integer_only
+            isnothing(minimum) || minimum isa Integer || error("Input is integer only, but minimum is not an integer.")
+            isnothing(maximum) || maximum isa Integer || error("Input is integer only, but maximum is not an integer.")
+        end
+        if !(isnothing(minimum) || isnothing(maximum))
+            minimum < maximum || error("Maximum value is not greater than minimum value.")
+        end
+        new(core, minimum, maximum, maximum_chars, integer_only)
+    end
+end
+
+function numerical_input(; minimum=nothing, maximum=nothing, maximum_chars=nothing, integer_only=false, kwargs...)
+    return NumericalInput(
+        QuestionCore(; kwargs...),
+        minimum,
+        maximum,
+        maximum_chars,
+        integer_only
+    )
+end
+
+struct MultipleNumericalInput <: AbstractMaskQuestion
+    core::QuestionCore
+    subquestions::Vector{SubQuestion}
+    minimum::Union{Nothing,<:Real}
+    maximum::Union{Nothing,<:Real}
+    maximum_chars::Union{Nothing,Integer}
+    minimum_sum::Union{Nothing,<:Real}
+    maximum_sum::Union{Nothing,<:Real}
+    integer_only::Bool
+    function MultipleNumericalInput(core, subquestions, minimum, maximum, maximum_chars, minimum_sum, maximum_sum, integer_only)
+        if integer_only
+            isnothing(minimum) || minimum isa Integer || error("Input is integer only, but minimum is not an integer.")
+            isnothing(maximum) || maximum isa Integer || error("Input is integer only, but maximum is not an integer.")
+            isnothing(minimum_sum) || minimum_sum isa Integer || error("Input is integer only, but minimum sum is not an integer.")
+            isnothing(maximum_sum) || maximum_sum isa Integer || error("Input is integer only, but maximum sum is not an integer.")
+        end
+        if !isnothing(minimum) && !isnothing(maximum)
+            minimum < maximum || error("Maximum value is not greater than minimum value.")
+        end
+        if !isnothing(minimum_sum) && !isnothing(maximum_sum)
+            minimum_sum < maximum_sum || error("Maximum sum is not greater than minimum sum.")
+        end
+        return new(core, subquestions, minimum, maximum, maximum_chars, minimum_sum, maximum_sum, integer_only)
+    end
+end
+
+function multiple_numerical_input(; subquestions=SubQuestion[], minimum=nothing, maximum=nothing, maximum_chars=nothing, minimum_sum=nothing, maximum_sum=nothing, integer_only=false, kwargs...)
+    return MultipleNumericalInput(
+        QuestionCore(; kwargs...),
+        subquestions,
+        minimum,
+        maximum,
+        maximum_chars,
+        minimum_sum,
+        maximum_sum,
+        integer_only
+    )
+end
+
+function multiple_numerical_input(children::Function; minimum=nothing, maximum=nothing, maximum_chars=nothing, minimum_sum=nothing, maximum_sum=nothing, integer_only=false, kwargs...)
+    return MultipleNumericalInput(
+        QuestionCore(; kwargs...),
+        tovector(children()),
+        minimum,
+        maximum,
+        maximum_chars,
+        minimum_sum,
+        maximum_sum,
+        integer_only
+    )
+end
+
+struct RankingQuestion <: AbstractMaskQuestion end
+
+struct AdvancedRankingQuestion <: AbstractMaskQuestion end
+
+struct TextDisplay <: AbstractMaskQuestion end
+
+struct YesNoQuestion <: AbstractMaskQuestion end
+
+struct Equation <: AbstractMaskQuestion end
+
+

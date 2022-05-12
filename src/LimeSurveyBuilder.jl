@@ -12,6 +12,7 @@ export short_text_question, long_text_question, huge_text_question, multiple_sho
 export single_choice_question, five_point_choice_question, dropdown_list_question, radio_list_question
 export multiple_choice_question
 export array_five_point_choice_question, array_ten_point_choice_question, array_question
+export date_select, file_upload, gender_select, language_switch, numerical_input, multiple_numerical_input
 export id, children, code, question
 
 include("SurveyStructure.jl")
