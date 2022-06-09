@@ -54,51 +54,17 @@ function addcdatanode!(n::EzXML.Node, element::AbstractString, data::AbstractStr
     addnode!(n, element, CDataNode(data))
 end
 
+"""
+    xml(survey::Survey)
 
-function addquestion!(n::EzXML.Node, q::Question, gid::Int, sid::Int, order::Int, language::String)
-    row_node = addsinglenode!(n, "rows")
-    question = addelement!(row_node, "row")
-
-    addcdatanode!(question, "qid", string(order))
-    addcdatanode!(question, "parent_qid", "0")
-    addcdatanode!(question, "sid", string(sid))
-    addcdatanode!(question, "gid", string(gid))
-    # type
-    addcdatanode!(question, "title", q.id)
-    addcdatanode!(question, "question", q.question)
-    isnothing(q.help) || addcdatanode!(question, "help", q.help)
-    addcdatanode!(question, "other", hasother(q) ? "Y" : "N")
-    addcdatanode!(question, "mandatory", ismandatory(q) ? "Y" : "N")
-    # question_order
-    # language
-    # scale_id
-    # same_default
-    addcdatanode!(question, "relevance", q.relevance)
-
-    return row_node
-end
-
-function addlanguages!(n::EzXML.Node, s::Survey)
-    language_node = addsinglenode!(n, "languages")
-    for language in languages(s)
-        addelement!(language_node, "language", language)
-    end
-    return language_node
-end
-
+Construct an XML document from a `Survey` object.
+"""
 function xml(survey::Survey)
     doc = create_document!()
     docroot = root(doc)
     add_header!(docroot, survey)
     add_survey!(docroot, survey)
-
-    # survey settings
-    # settings_node = addsinglenode!(docroot, "surveys_languagesettings")
-    # settings = addrow!(settings_node)
-    # addnode!(settings, "surveyls_survey_id", CDataNode(string(id(s))))
-    # addnode!(settings, "surveyls_language", CDataNode(language(s)))
-    # addnode!(settings, "surveyls_title", CDataNode(title(s)))
-
+    add_language_settings!(docroot, survey)
     return doc
 end
 
@@ -110,7 +76,15 @@ end
 
 function add_header!(root, survey::Survey)
     addelement!(root, "LimeSurveyDocType", "Survey")
-    addlanguages!(root, survey)
+    add_languages!(root, survey)
+    return nothing
+end
+
+function add_languages!(root, survey::Survey)
+    language_node = addsinglenode!(root, "languages")
+    for language in languages(survey)
+        addelement!(language_node, "language", language)
+    end
     return nothing
 end
 
@@ -253,4 +227,15 @@ function add_default_value!(root, option::ResponseOption, iterator::SurveyIterat
     return nothing
 end
 
-function add_language_settings!() end
+function add_language_settings!(root, survey::Survey)
+    settings_node = addsinglenode!(root, "surveys_languagesettings")
+
+    for language in languages(survey)
+        setting_node = addrow!(settings_node)
+        addcdatanode!(setting_node, "surveyls_survey_id", string(survey.id))
+        addcdatanode!(setting_node, "surveyls_language", language)
+        addcdatanode!(setting_node, "surveyls_title", title(survey, language))
+    end
+
+    return nothing
+end

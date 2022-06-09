@@ -1,22 +1,4 @@
 """
-    SubQuestion
-
-# Fields
-- `id::String`: An alphanumeric question id. Must start with a letter.
-- `question::String`: The subquestion title.
-- `type::String`: The LimeSurvey qusetion type
-- `relevance::String`: A LimeSurvey Expression Script
-"""
-@kwdef struct SubQuestion <: AbstractSurveyComponent
-    id::String
-    question::String
-    type::String = "T"
-    relevance::String = "1"
-    language::String = DEFAULT_LANGUAGE[]
-    # TODO: validate id
-end
-
-"""
     Question
 
 # Fields
@@ -27,41 +9,64 @@ end
 - `other::Bool`: Determines if the questions as *other* category
 - `relevance::String`: A LimeSurvey Expression Script
 """
-@kwdef struct Question <: AbstractSurveyComponent
+@kwdef struct Question <: AbstractQuestion
     id::String
-    question::String
     type::String
-    help::Union{Nothing,String} = nothing
     mandatory::Bool = false
     other::Bool = false
     relevance::String = "1"
+    language_settings::Vector{LanguageSetting}
     subquestions::Vector{SubQuestion} = SubQuestion[]
     options::Vector{ResponseOption} = ResponseOption[]
-    function Question(id, question, type, help, mandatory, other, relevance, subquestions, options)
+    function Question(id, type, mandatory, other, relevance, language_settings, subquestions, options)
         validate(id) || error("Question codes must start with a letter and may only contain alphanumeric characters.")
-        return new(id, question, type, help, mandatory, other, relevance, subquestions, options)
+        return new(id, type, mandatory, other, relevance, language_settings, subquestions, options)
     end
 end
 
-id(q::SubQuestion) = q.id
-question(q::SubQuestion) = q.question
-type(q::SubQuestion) = q.type
-relevance(q::SubQuestion) = q.relevance
-
-subquestion(; kwargs...) = SubQuestion(; kwargs...)
-
+is_mandatory(question::Question) = question.mandatory
+has_other(question::Question) = question.other
 
 # text questions
-short_text_question(; kwargs...) = Question(; type="S", kwargs...)
-long_text_question(; kwargs...) = Question(; type="T", kwargs...)
-huge_text_question(; kwargs...) = Question(; type="U", kwargs...)
-
-function multiple_short_text_question(; subquestions, kwargs...)
-    return Question(; type="Q", subquestions, kwargs...)
+function short_text_question(id, title::String; help=nothing, kwargs...)
+    setting = language_setting(default_language(), title; help)
+    return Question(; id, type="S", language_settings=[setting], kwargs...)
 end
 
-function multiple_short_text_question(children::Function; kwargs...)
-    return Question(; type="Q", subquestions=tovector(children()), kwargs...)
+function short_text_question(id, language_settings::Vector{LanguageSetting}; kwargs...)
+    return Question(; id, type="S", language_settings, kwargs...)
+end
+
+function long_text_question(id, title::String; help=nothing, kwargs...)
+    setting = language_setting(default_language(), title; help)
+    return Question(; id, type="T", language_settings=[setting], kwargs...)
+end
+
+function long_text_question(id, language_settings::Vector{LanguageSetting}; kwargs...)
+    return Question(; id, type="T", language_settings, kwargs...)
+end
+
+function huge_text_question(id, title::String; help=nothing, kwargs...)
+    setting = language_setting(default_language(), title; help)
+    return Question(; id, type="U", language_settings=[setting], kwargs...)
+end
+
+function huge_text_question(id, language_settings::Vector{LanguageSetting}; kwargs...)
+    return Question(; id, type="U", language_settings, kwargs...)
+end
+
+function multiple_short_text_question(id, title::String; subquestions, help=nothing, kwargs...)
+    setting = language_setting(default_language(), title; help)
+    return Question(; id, type="Q", language_settings=[setting], subquestions, kwargs...)
+end
+
+function multiple_short_text_question(children::Function, id, title::String; help=nothing, kwargs...)
+    setting = language_setting(default_language(), title; help)
+    return Question(; id, type="Q", language_settings=[setting], subquestions=tovector(children()), kwargs...)
+end
+
+function multiple_short_text_question(id, language_settings::Vector{LanguageSetting}; subquestions, kwargs...)
+    return Question(; id, type="Q", language_settings, subquestions, kwargs...)
 end
 
 # single choice questions

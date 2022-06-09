@@ -1,13 +1,22 @@
-@kwdef struct QuestionGroup <: AbstractSurveyComponent
+struct QuestionGroup <: AbstractSurveyComponent
     id::Int
-    title::String
-    description::String = ""
-    language::String = DEFAULT_LANGUAGE[]
-    children::Vector{Question} = Question[]
-    # internal
-    order::Union{Nothing,Int} = nothing
-    survey_id::Union{Nothing,Int} = nothing
+    language_settings::Vector{LanguageSetting}
+    children::Vector{Question}
 end
 
-question_group(; kwargs...) = QuestionGroup(; kwargs...)
-question_group(children::Function; kwargs...) = QuestionGroup(; kwargs..., children=tovector(children()))
+function question_group(id, title::String; description=nothing, children=Question[])
+    setting = language_setting(default_language(), title; description)
+    return QuestionGroup(id, [setting], children)
+end
+
+function question_group(children::Function, id, title::String; description)
+    question_group(id, title; description, children=tovector(children()))
+end
+
+function question_group(id, language_settings::Vector{LanguageSetting}; children=Question[])
+    return QuestionGroup(id, language_settings, children)
+end
+
+function question_group(children::Function, id, language_settings::Vector{LanguageSetting})
+    return question_group(id, language_settings, children=tovector(children()))
+end

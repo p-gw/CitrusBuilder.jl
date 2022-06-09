@@ -18,6 +18,33 @@ export id, children, code, question
 export xml
 export type
 
+# global settings
+export set_default_language!, default_language
+
+# abstractsurveycomponents
+export id
+export languages
+export title
+export relevance
+export type
+export help
+export description
+
+# language settings
+export language_setting
+
+# subquestions
+export subquestion
+
+# question
+export is_mandatory
+export has_other
+
+export short_text_question
+export long_text_question
+export huge_text_question
+export multiple_short_text_question
+
 const DEFAULT_LANGUAGE = Ref("en")
 
 function set_default_language!(lang::String)
@@ -26,13 +53,17 @@ function set_default_language!(lang::String)
     return nothing
 end
 
-include("utils.jl")
+default_language() = DEFAULT_LANGUAGE[]
+
 include("survey_component.jl")
+include("language_settings.jl")
 include("response_scale.jl")
 include("subquestion.jl")
 include("question.jl")
 include("question_group.jl")
 include("survey.jl")
 include("xml.jl")
+
+include("utils.jl")
 
 end

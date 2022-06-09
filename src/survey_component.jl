@@ -1,20 +1,25 @@
 abstract type AbstractSurveyComponent end
 
-id(x::AbstractSurveyComponent) = x.id
+id(component::AbstractSurveyComponent) = component.id
+languages(component::AbstractSurveyComponent) = getfield.(component.language_settings, :language)
+default_language(component::AbstractSurveyComponent) = first(component.language_settings).language
+
+function title(component::AbstractSurveyComponent, language::String=default_language(component))
+    setting = find_language_setting(language, component)
+    return setting.title
+end
+
+function help(component::AbstractSurveyComponent, language::String=default_language(component))
+    setting = find_language_setting(language, component)
+    return setting.help
+end
+
+function description(component::AbstractSurveyComponent, language::String=default_language(component))
+    setting = find_language_setting(language, component)
+    return setting.description
+end
+
 children(x::AbstractSurveyComponent) = x.children
-title(x::AbstractSurveyComponent) = x.title
-description(x::AbstractSurveyComponent) = x.description
-language(x::AbstractSurveyComponent) = x.language
-
-function tovector(child::T)::Vector{T} where {T<:AbstractSurveyComponent}
-    return [child]
-end
-
-function tovector(children)::Vector{<:AbstractSurveyComponent}
-    return [child for child in children]
-end
-
-tovector(::Nothing) = return Question[]
 
 function Base.prepend!(c::AbstractSurveyComponent, item)
     prepend!(children(c), tovector(item))
@@ -30,3 +35,7 @@ function Base.insert!(c::AbstractSurveyComponent, i::Int, item)
     insert!(children(c), i, item)
     return item
 end
+
+abstract type AbstractQuestion <: AbstractSurveyComponent end
+
+type(q::AbstractQuestion) = q.type
