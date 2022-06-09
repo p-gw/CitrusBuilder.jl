@@ -62,7 +62,7 @@ using Test
         @test g.id == 1
         @test g.title == ""
         @test g.description == ""
-        @test g.children == LimeSurveyBuilder.AbstractQuestion[]
+        @test g.children == LimeSurveyBuilder.Question[]
 
         g = question_group(id=1, title="", description="") do
             short_text_question(code="q1")

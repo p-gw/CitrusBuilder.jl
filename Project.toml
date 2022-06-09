@@ -3,6 +3,9 @@ uuid = "28cec04b-85b5-4b92-beb9-e8851fc733f1"
 authors = ["Philipp Gewessler"]
 version = "0.1.0"
 
+[deps]
+EzXML = "8f5d6c58-4d21-5cfd-889c-e3ad7ee6a615"
+
 [compat]
 julia = "1"
 
