@@ -4,6 +4,7 @@ using Base: @kwdef
 using Base: prepend!
 using Base: insert!
 using Base: append!
+import Base: write
 using EzXML
 
 export survey, question_group
@@ -44,6 +45,10 @@ export short_text_question
 export long_text_question
 export huge_text_question
 export multiple_short_text_question
+
+# xml
+export xml
+
 
 const DEFAULT_LANGUAGE = Ref("en")
 

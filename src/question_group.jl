@@ -9,7 +9,7 @@ function question_group(id, title::String; description=nothing, children=Questio
     return QuestionGroup(id, [setting], children)
 end
 
-function question_group(children::Function, id, title::String; description)
+function question_group(children::Function, id, title::String; description=nothing)
     question_group(id, title; description, children=tovector(children()))
 end
 

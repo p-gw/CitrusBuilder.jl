@@ -1,28 +1,26 @@
-@kwdef struct LanguageSettings
-    language::String
-    title::String
-    description::Union{Nothing,String} = nothing
-    welcome_text::Union{Nothing,String} = nothing
-    end_text::Union{Nothing,String} = nothing
-    url::Union{Nothing,String} = nothing
-    url_description::Union{Nothing,String} = nothing
-    decimal::Char = '.'
-end
-
-language_settings(; kwargs...) = LanguageSettings(; kwargs...)
-
-@kwdef mutable struct Survey <: AbstractSurveyComponent
+struct Survey <: AbstractSurveyComponent
     id::Int
-    language_settings::Vector{LanguageSettings}
-    children::Vector{QuestionGroup} = QuestionGroup[]
+    language_settings::Vector{LanguageSetting}
+    children::Vector{QuestionGroup}
 end
 
-function survey(; id::Int, title::String, children=QuestionGroup[], kwargs...)
-    language = language_settings(; language=DEFAULT_LANGUAGE[], title, kwargs...)
-    return Survey(; id, language_settings=[language], children)
+function survey(id, title::String; children=QuestionGroup[])
+    language = language_setting(default_language(), title)
+    return Survey(id, [language], children)
 end
 
-survey(children; kwargs...) = survey(; kwargs..., children=tovector(children()))
+function survey(children::Function, id, title::String; kwargs...)
+    return survey(id, title; children=tovector(children()))
+end
+
+function survey(id, language_settings::Vector{LanguageSetting}; children=QuestionGroup[])
+    return Survey(id, language_settings, children)
+end
+
+function survey(children::Function, id, language_settings::Vector{LanguageSetting})
+    return survey(id, language_settings, children=tovector(children()))
+end
+
 
 function Base.show(io::IO, survey::Survey)
     groups = survey.children
@@ -33,18 +31,18 @@ function Base.show(io::IO, survey::Survey)
     println(io, "$(title(survey)) (id: $(survey.id))")
     for (i, group) in enumerate(groups)
         p = prefix(i, n_groups)
-        println(io, "$p $(group.title) (id: $(group.id))")
+        println(io, "$p $(title(group)) (id: $(group.id))")
 
         for (j, question) in enumerate(group.children)
             p = prefix(j, length(group.children))
-            println(io, "    $p $(question.question) (code: $(question.id)))")
+            println(io, "    $p $(title(question)) (code: $(question.id)))")
 
-            if question isa ArrayQuestion
-                for (k, subquestion) in enumerate(question.subquestions)
-                    p = prefix(k, length(question.subquestions))
-                    println(io, "        $p $(subquestion.question) (code: $(subquestion.code))")
-                end
-            end
+            # if question isa ArrayQuestion
+            #     for (k, subquestion) in enumerate(question.subquestions)
+            #         p = prefix(k, length(question.subquestions))
+            #         println(io, "        $p $(subquestion.question) (code: $(subquestion.code))")
+            #     end
+            # end
         end
     end
 end
