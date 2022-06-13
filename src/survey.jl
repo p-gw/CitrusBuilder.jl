@@ -23,18 +23,23 @@ end
 
 function Base.show(io::IO, survey::Survey)
     groups = survey.children
-    n_groups = length(groups)
 
+    n_groups = length(groups)
     n_questions = length(groups) > 0 ? sum(length(group.children) for group in groups) : 0
-    println(io, "Survey with $n_groups groups and $n_questions questions.")
+
+    group_str = n_groups == 1 ? "group" : "groups"
+    question_str = n_questions == 1 ? "question" : "questions"
+
+    println(io, "Survey with $n_groups $group_str and $n_questions $question_str.")
     println(io, "$(title(survey)) (id: $(survey.id))")
+
     for (i, group) in enumerate(groups)
         p = prefix(i, n_groups)
         println(io, "$p $(title(group)) (id: $(group.id))")
 
         for (j, question) in enumerate(group.children)
             p = prefix(j, length(group.children))
-            println(io, "    $p $(title(question)) (code: $(question.id)))")
+            println(io, "    $p $(title(question)) (id: $(question.id))")
 
             # if question isa ArrayQuestion
             #     for (k, subquestion) in enumerate(question.subquestions)
