@@ -17,7 +17,7 @@
     relevance::String = "1"
     language_settings::Vector{LanguageSetting}
     subquestions::Vector{SubQuestion} = SubQuestion[]
-    options::Vector{ResponseOption} = ResponseOption[]
+    options::Vector{ResponseScale} = ResponseScale[]
     function Question(id, type, mandatory, other, relevance, language_settings, subquestions, options)
         validate(id) || error("Question codes must start with a letter and may only contain alphanumeric characters.")
         return new(id, type, mandatory, other, relevance, language_settings, subquestions, options)
@@ -26,6 +26,8 @@ end
 
 is_mandatory(question::Question) = question.mandatory
 has_other(question::Question) = question.other
+has_subquestions(question::Question) = length(question.subquestions) > 0
+has_response_options(question::Question) = length(question.options) > 0
 
 # text questions
 function short_text_question(id, title::String; help=nothing, kwargs...)

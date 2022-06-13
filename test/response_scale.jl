@@ -1,27 +1,25 @@
+@testset "Response Scale Construction" begin
+    @testset "response options" begin
+        option = response_option("a1", "response option")
+        @test id(option) == option.id == "a1"
+        @test title(option) == "response option"
+        @test languages(option) == ["en"]
+        @test default_language(option) == "en"
+        @test is_default(option) == option.default == false
+    end
 
-    #     @testset "Response Scale Construction" begin
-    #         # response options
-    #         option = response_option(code="a123", option="test option")
-    #         @test option.code == "a123"
-    #         @test option.option == "test option"
+    @testset "response scales" begin
+        n = 5
 
-    #         # response scales
-    #         n = 7
+        scale = response_scale() do
+            (response_option("a$i", "option $i") for i in 1:n)
+        end
 
-    #         scale = response_scale(header="testheader") do
-    #             (response_option(code="a$i", option="option $i") for i in 1:n)
-    #         end
+        @test length(scale.options) == n
 
-    #         @test length(scale.options) == n
-    #         @test scale.header == "testheader"
-
-    #         # convenience functions
-    #         n = 11
-    #         @test point_scale(n).header == ""
-    #         @test length(point_scale(n).options) == n
-    #         for (i, option) in enumerate(point_scale(n).options)
-    #             @test option.code == "A$i"
-    #             @test option.option == "$i"
-    #         end
-    #     end
-    # end
+        for i in eachindex(scale.options)
+            @test id(scale.options[i]) == "a$i"
+            @test title(scale.options[i]) == "option $i"
+        end
+    end
+end

@@ -21,7 +21,6 @@ function survey(children::Function, id, language_settings::Vector{LanguageSettin
     return survey(id, language_settings, children=tovector(children()))
 end
 
-
 function Base.show(io::IO, survey::Survey)
     groups = survey.children
     n_groups = length(groups)

@@ -34,12 +34,19 @@ export description
 # language settings
 export language_setting
 
+# response options
+export response_option
+export response_scale
+export is_default
+
 # subquestions
 export subquestion
 
 # question
 export is_mandatory
 export has_other
+export has_subquestions
+export has_response_options
 
 export short_text_question
 export long_text_question

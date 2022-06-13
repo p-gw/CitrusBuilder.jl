@@ -7,7 +7,8 @@ using Test
     include("utils.jl")
     include("subquestion.jl")
     # include("survey_component.jl")
-    # include("survey.jl")
+    include("survey.jl")
     include("question.jl")
     include("question_group.jl")
+    include("response_scale.jl")
 end

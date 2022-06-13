@@ -19,6 +19,8 @@
             @test id(q) == q.id == "id1"
             @test is_mandatory(q) == q.mandatory == false
             @test has_other(q) == q.other == false
+            @test has_subquestions(q) == false
+            @test has_response_options(q) == false
             @test default_language(q) == "en"
             @test languages(q) == ["en"]
             @test title(q) == "title"
@@ -30,6 +32,8 @@
             @test type(q) == "S"
             @test id(q) == "id2"
             @test is_mandatory(q) == true
+            @test has_subquestions(q) == false
+            @test has_response_options(q) == false
             @test default_language(q) == "de"
             @test languages(q) == ["de", "en"]
             @test title(q) == "Titel"
@@ -49,6 +53,8 @@
         @test_throws ErrorException title(q, "de")
         @test length(q.subquestions) == 1
         @test title(first(q.subquestions)) == "subquestion title"
+        @test has_subquestions(q) == true
+        @test has_response_options(q) == false
 
         q = multiple_short_text_question("id4", "mst2"; help="answer 3 subquestions") do
             subquestion("sq1", "title 1"),
@@ -57,6 +63,7 @@
         end
 
         @test help(q) == "answer 3 subquestions"
+        @test has_subquestions(q) == true
         @test length(q.subquestions) == 3
         for (i, sq) in enumerate(q.subquestions)
             @test id(sq) == "sq$i"
@@ -64,6 +71,7 @@
         end
 
         q = multiple_short_text_question("id5", language_settings; subquestions=[subquestion("sq1", "title 1")])
+        @test has_subquestions(q) == true
         @test length(q.subquestions) == 1
         @test languages(q) == ["de", "en"]
     end
