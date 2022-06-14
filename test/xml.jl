@@ -75,6 +75,19 @@
         @test countnodes(rows_node) == n
     end
 
+    @testset "add_cdata_node!" begin
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+
+        inputs = ["test", 1, 1.0, 1 // 3]
+
+        for (i, input) in enumerate(inputs)
+            cdata_node = LimeSurveyBuilder.add_cdata_node!(docroot, "node_$i", input)
+            @test nodename(parentnode(cdata_node)) == "node_$i"
+            @test nodecontent(cdata_node) == string(input)
+        end
+    end
+
     @testset "add_languages!" begin
         doc = LimeSurveyBuilder.create_document!()
         docroot = root(doc)
@@ -112,5 +125,73 @@
 
         languages_node = last(nodes(docroot))
         @test countnodes(languages_node) == 2
+    end
+
+    @testset "SurveyIterator" begin
+        iterator = LimeSurveyBuilder.SurveyIterator(123456)
+        @test iterator.survey_id == 123456
+        @test iterator.group_id == 0
+        @test iterator.question_id == 0
+        @test iterator.subquestion_id == 0
+        @test iterator.order == 0
+    end
+
+    @testset "add_survey!" begin
+        s = survey(100000, "testsurvey 1")
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+        LimeSurveyBuilder.add_survey!(docroot, s)
+
+        @test countnodes(docroot) == 1
+        surveys_node = first(nodes(docroot))
+
+        @test nodename(surveys_node) == "surveys"
+        @test countnodes(surveys_node) == 1
+
+        rows_node = first(nodes(surveys_node))
+        @test nodename(rows_node) == "rows"
+        @test countnodes(rows_node) == 1
+
+        row_node = first(nodes(rows_node))
+        @test nodename(row_node) == "row"
+
+        survey_data = nodes(row_node)
+        @test nodename(survey_data[1]) == "sid"
+        @test nodecontent(survey_data[1]) == "100000"
+        @test nodename(survey_data[2]) == "language"
+        @test nodecontent(survey_data[2]) == "en"
+
+        # with language settings
+        s = survey(100001, [
+            language_setting("en", "title"),
+            language_setting("de", "Titel")
+        ])
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+        LimeSurveyBuilder.add_survey!(docroot, s)
+
+        @test countnodes(docroot) == 1
+        surveys_node = first(nodes(docroot))
+
+        @test nodename(surveys_node) == "surveys"
+        @test countnodes(surveys_node) == 1
+
+        rows_node = first(nodes(surveys_node))
+        @test nodename(rows_node) == "rows"
+        @test countnodes(rows_node) == 2
+
+        for (i, row) in enumerate(nodes(rows_node))
+            language = i == 1 ? "en" : "de"
+            settings = nodes(row)
+            @test nodename(settings[1]) == "sid"
+            @test nodecontent(settings[1]) == "100001"
+
+            @test nodename(settings[2]) == "language"
+            @test nodecontent(settings[2]) == language
+        end
+
+        # TODO: with question groups
     end
 end

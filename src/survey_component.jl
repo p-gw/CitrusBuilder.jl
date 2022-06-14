@@ -14,9 +14,19 @@ function help(component::AbstractSurveyComponent, language::String=default_langu
     return setting.help
 end
 
+function has_help(component::AbstractSurveyComponent, language::String=default_language(component))
+    setting = find_language_setting(language, component)
+    return !isnothing(setting.help)
+end
+
 function description(component::AbstractSurveyComponent, language::String=default_language(component))
     setting = find_language_setting(language, component)
     return setting.description
+end
+
+function has_description(component::AbstractSurveyComponent, language::String=default_language(component))
+    setting = find_language_setting(language, component)
+    return !isnothing(setting.description)
 end
 
 children(x::AbstractSurveyComponent) = x.children

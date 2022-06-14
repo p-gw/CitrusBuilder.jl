@@ -31,6 +31,9 @@ export type
 export help
 export description
 
+export has_help
+export has_description
+
 # language settings
 export language_setting
 

@@ -12,8 +12,8 @@ function add_unique_node!(parent::EzXML.Node, name::AbstractString)
 end
 
 function add_cdata_node!(parent::EzXML.Node, element::AbstractString, data)
-    add_node!(parent, element, CDataNode(string(data)))
-    return nothing
+    element_node = add_node!(parent, element, CDataNode(string(data)))
+    return element_node
 end
 
 function add_node!(parent::EzXML.Node, element::AbstractString, node::EzXML.Node)
@@ -90,7 +90,7 @@ function add_survey!(root::EzXML.Node, survey::Survey)
         add_question_group!(root, group, iterator)
     end
 
-    return nothing
+    return surveys_node
 end
 
 function add_question_group!(root::EzXML.Node, group::QuestionGroup, iterator::SurveyIterator)
@@ -102,8 +102,11 @@ function add_question_group!(root::EzXML.Node, group::QuestionGroup, iterator::S
         add_cdata_node!(group_node, "sid", iterator.survey_id)
         add_cdata_node!(group_node, "group_order", iterator.order)
         add_cdata_node!(group_node, "group_name", title(group, language))
-        add_cdata_node!(group_node, "description", description(group, language))
         add_cdata_node!(group_node, "language", language)
+
+        if has_description(group, language)
+            add_cdata_node!(group_node, "description", description(group, language))
+        end
     end
 
     for (question_order, question) in enumerate(group.children)
@@ -127,12 +130,15 @@ function add_question!(root::EzXML.Node, question::Question, iterator::SurveyIte
         add_cdata_node!(question_node, "type", question.type)
         add_cdata_node!(question_node, "title", question.id)
         add_cdata_node!(question_node, "question", title(question, language))
-        add_cdata_node!(question_node, "help", help(question, language))
         add_cdata_node!(question_node, "other", has_other(question) ? "Y" : "N")
         add_cdata_node!(question_node, "mandatory", is_mandatory(question) ? "Y" : "N")
         add_cdata_node!(question_node, "question_order", iterator.order)
         add_cdata_node!(question_node, "language", language)
         add_cdata_node!(question_node, "relevance", question.relevance)
+
+        if has_help(question, language)
+            add_cdata_node!(question_node, "help", help(question, language))
+        end
     end
 
     for (subquestion_order, subquestion) in enumerate(question.subquestions)
@@ -190,7 +196,7 @@ function add_answer!(root::EzXML.Node, option::ResponseOption, iterator::SurveyI
     add_cdata_node!(answer_node, "language", option.language)
     add_cdata_node!(answer_node, "scale_id", option.scale_id)
 
-    return nothing
+    return answer_node
 end
 
 function add_default_value!(root::EzXML.Node, option::ResponseOption, iterator::SurveyIterator)
@@ -204,7 +210,7 @@ function add_default_value!(root::EzXML.Node, option::ResponseOption, iterator::
     add_cdata_node!(default_node, "defaultvalue", option.id)
     # specialtype
 
-    return nothing
+    return default_node
 end
 
 function add_language_settings!(root::EzXML.Node, survey::Survey)
@@ -217,7 +223,7 @@ function add_language_settings!(root::EzXML.Node, survey::Survey)
         add_cdata_node!(setting_node, "surveyls_title", title(survey, language))
     end
 
-    return nothing
+    return settings_node
 end
 
 function write(filename::AbstractString, survey::Survey)

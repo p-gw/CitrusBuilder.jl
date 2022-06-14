@@ -1,16 +1,29 @@
-@testset "Vector conversion" begin
-    g = question_group(id=1, title="", description="")
-    @test LimeSurveyBuilder.tovector(g) isa Vector{typeof(g)}
-    @test length(LimeSurveyBuilder.tovector(g)) == 1
+@testset "Survey components" begin
+    @testset "Accessor functions" begin
+        struct TestComponent <: LimeSurveyBuilder.AbstractSurveyComponent
+            id::Int
+            language_settings::Vector{LimeSurveyBuilder.LanguageSetting}
+        end
 
-    n = rand(1:15)
-    @test length(LimeSurveyBuilder.tovector(g for _ in 1:n)) == n
+        component = TestComponent(1, [
+            language_setting("de", "Titel", description="Eine Beschreibung", help="Hilfetext"),
+            language_setting("en", "title")
+        ])
 
-    q = short_text_question(code="q1")
-    @test LimeSurveyBuilder.tovector(q) isa Vector{typeof(q)}
-    @test length(LimeSurveyBuilder.tovector(q)) == 1
-    @test length(LimeSurveyBuilder.tovector(q for _ in 1:n)) == n
+        @test id(component) == 1
+        @test languages(component) == ["de", "en"]
+        @test default_language(component) == "de"
 
-    q2 = long_text_question(code="q2")
-    @test LimeSurveyBuilder.tovector((q, q2)) isa Vector{LimeSurveyBuilder.TextQuestion}
+        @test title(component, "de") == "Titel"
+        @test help(component, "de") == help(component) == "Hilfetext"
+        @test has_help(component, "de") == has_help(component) == true
+        @test description(component, "de") == description(component) == "Eine Beschreibung"
+        @test has_description(component, "de") == has_description(component) == true
+
+        @test title(component, "en") == "title"
+        @test help(component, "en") === nothing
+        @test has_help(component, "en") == false
+        @test description(component, "en") === nothing
+        @test has_description(component, "en") == false
+    end
 end
