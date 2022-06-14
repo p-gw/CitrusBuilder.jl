@@ -55,11 +55,11 @@ function add_header!(root::EzXML.Node, survey::Survey)
 end
 
 function add_languages!(root::EzXML.Node, survey::Survey)
-    language_node = add_unique_node!(root, "languages")
+    languages_node = add_unique_node!(root, "languages")
     for language in languages(survey)
-        addelement!(language_node, "language", language)
+        addelement!(languages_node, "language", language)
     end
-    return nothing
+    return languages_node
 end
 
 mutable struct SurveyIterator

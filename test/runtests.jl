@@ -2,6 +2,7 @@ using Dates
 using LimeSurveyBuilder
 using Random
 using Test
+using EzXML
 
 @testset "LimeSurveyBuilder.jl" begin
     include("utils.jl")
@@ -11,4 +12,5 @@ using Test
     include("question.jl")
     include("question_group.jl")
     include("response_scale.jl")
+    include("xml.jl")
 end
