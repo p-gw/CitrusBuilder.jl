@@ -76,6 +76,73 @@
         @test languages(q) == ["de", "en"]
     end
 
+    @testset "Single Choice Questions" begin
+        @testset "five_point_choice_question" begin
+            q = five_point_choice_question("q1", "question", help="rate from 1 to 5")
+            @test type(q) == "5"
+            @test id(q) == "q1"
+            @test title(q) == "question"
+            @test help(q) == "rate from 1 to 5"
+            @test_throws ErrorException title(q, "de")
+            @test has_subquestions(q) == false
+            @test has_response_options(q) == false
+
+            q = five_point_choice_question("q2", [
+                language_setting("de", "Frage"),
+                language_setting("en", "question", help="some help")
+            ])
+
+            @test type(q) == "5"
+            @test id(q) == "q2"
+            @test title(q) == title(q, "de") == "Frage"
+            @test title(q, "en") == "question"
+            @test has_help(q) == has_help(q, "de") == false
+            @test has_help(q, "en") == true
+        end
+
+        @testset "dropdown_list_question" begin
+            scale = response_scale([
+                response_option("a1", "first option"),
+                response_option("a2", "second option")
+            ])
+
+            q = dropdown_list_question("q1", "dropdown question", scale)
+            @test type(q) == "!"
+            @test id(q) == "q1"
+            @test title(q) == "dropdown question"
+            @test length(q.options) == 1
+
+            q = dropdown_list_question("q2", [
+                    language_setting("de", "Auswahlliste"),
+                    language_setting("en", "dropdown list")
+                ], scale)
+
+            @test type(q) == "!"
+            @test id(q) == "q2"
+            @test title(q) == title(q, "de") == "Auswahlliste"
+            @test title(q, "en") == "dropdown list"
+        end
+
+        @testset "radio_list_question" begin
+            scale = response_scale([
+                response_option("a1", "first option"),
+                response_option("a2", "second option")
+            ])
+
+            q = radio_list_question("q1", "radio", scale)
+            @test type(q) == "L"
+            @test id(q) == "q1"
+            @test title(q) == "radio"
+
+            q = radio_list_question("q2", "radio", scale; comment=true, help="help")
+            @test type(q) == "O"
+            @test help(q) == "help"
+
+            q = radio_list_question("q3", language_setting("de", "Titel"), scale)
+            @test title(q) == title(q, "de") == "Titel"
+        end
+    end
+
     #     @testset "Mask Questions" begin
     #         @testset "Date Select" begin
     #             # check defaults

@@ -67,11 +67,12 @@ mutable struct SurveyIterator
     group_id::Int
     question_id::Int
     subquestion_id::Int
+    scale_id::Int
     counter::Int
     order::Int
 end
 
-SurveyIterator(survey_id) = SurveyIterator(survey_id, 0, 0, 0, 0, 0)
+SurveyIterator(survey_id) = SurveyIterator(survey_id, 0, 0, 0, 0, 0, 0)
 
 function add_survey!(root::EzXML.Node, survey::Survey)
     surveys_node = add_unique_node!(root, "surveys")
@@ -148,9 +149,10 @@ function add_question!(root::EzXML.Node, question::Question, iterator::SurveyIte
         add_subquestion!(root, subquestion, iterator)
     end
 
-    for (option_order, option) in enumerate(question.options)
-        iterator.order = option_order
-        add_response_option!(root, option, iterator)
+    for (scale_id, scale) in enumerate(question.options)
+        # LimeSurveys scale_id starts at 0
+        iterator.scale_id = scale_id - 1
+        add_response_scale!(root, scale, iterator)
     end
 
     return nothing
@@ -178,6 +180,13 @@ function add_subquestion!(root::EzXML.Node, subquestion::SubQuestion, iterator::
     return nothing
 end
 
+function add_response_scale!(root::EzXML.Node, scale::ResponseScale, iterator::SurveyIterator)
+    for (option_order, option) in enumerate(scale.options)
+        iterator.order = option_order
+        add_response_option!(root, option, iterator)
+    end
+end
+
 function add_response_option!(root::EzXML.Node, option::ResponseOption, iterator::SurveyIterator)
     add_answer!(root, option, iterator)
     is_default(option) && add_default_value!(root, option, iterator)
@@ -188,13 +197,15 @@ function add_answer!(root::EzXML.Node, option::ResponseOption, iterator::SurveyI
     answers_node = add_unique_node!(root, "answers")
     answer_node = add_row_node!(answers_node)
 
-    add_cdata_node!(answer_node, "qid", iterator.question_id)
-    add_cdata_node!(answer_node, "code", option.id)
-    add_cdata_node!(answer_node, "answer", option.option)
-    add_cdata_node!(answer_node, "sortorder", iterator.order)
-    # assessment value
-    add_cdata_node!(answer_node, "language", option.language)
-    add_cdata_node!(answer_node, "scale_id", option.scale_id)
+    for language in languages(option)
+        add_cdata_node!(answer_node, "qid", iterator.question_id)
+        add_cdata_node!(answer_node, "code", option.id)
+        add_cdata_node!(answer_node, "answer", title(option, language))
+        add_cdata_node!(answer_node, "sortorder", iterator.order)
+        add_cdata_node!(answer_node, "language", language)
+        add_cdata_node!(answer_node, "scale_id", iterator.scale_id)
+        # assessment value
+    end
 
     return answer_node
 end
@@ -203,12 +214,14 @@ function add_default_value!(root::EzXML.Node, option::ResponseOption, iterator::
     defaults_node = add_unique_node!(root, "defaultvalues")
     default_node = add_row_node!(defaults_node)
 
-    add_cdata_node!(default_node, "qid", iterator.question_id)
-    add_cdata_node!(default_node, "scale_id", option.scale_id)
-    add_cdata_node!(default_node, "sqid", iterator.subquestion_id)
-    add_cdata_node!(default_node, "language", option.language)
-    add_cdata_node!(default_node, "defaultvalue", option.id)
-    # specialtype
+    for language in languages(option)
+        add_cdata_node!(default_node, "qid", iterator.question_id)
+        add_cdata_node!(default_node, "scale_id", iterator.scale_id)
+        add_cdata_node!(default_node, "sqid", iterator.subquestion_id)
+        add_cdata_node!(default_node, "language", language)
+        add_cdata_node!(default_node, "defaultvalue", option.id)
+        # specialtype
+    end
 
     return default_node
 end

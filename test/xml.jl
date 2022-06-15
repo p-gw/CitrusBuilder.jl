@@ -134,6 +134,7 @@
         @test iterator.question_id == 0
         @test iterator.subquestion_id == 0
         @test iterator.order == 0
+        @test iterator.scale_id == 0
     end
 
     @testset "add_survey!" begin
@@ -192,6 +193,196 @@
             @test nodecontent(settings[2]) == language
         end
 
-        # TODO: with question groups
+        # with question groups
+        n_groups = 4
+        s = survey(100002, "survey title") do
+            (question_group(i, "group $i") for i in 1:n_groups)
+        end
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+        LimeSurveyBuilder.add_survey!(docroot, s)
+
+
+        @test nodename.(nodes(docroot)) == ["surveys", "groups"]
+        surveys_node, groups_node = nodes(docroot)
+
+        @test countnodes(groups_node) == 1
+
+        rows_node = first(nodes(groups_node))
+        @test nodename(rows_node) == "rows"
+        @test countnodes(rows_node) == n_groups
+
+        for (i, row) in enumerate(nodes(rows_node))
+            @test nodename(row) == "row"
+            @test nodename.(nodes(row)) == ["gid", "sid", "group_order", "group_name", "language"]
+            @test nodecontent.(nodes(row)) == ["$i", "100002", "$i", "group $i", "en"]
+        end
     end
+
+    @testset "add_question_group!" begin
+        # without questions
+        group = question_group(100, "group title")
+        iterator = LimeSurveyBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+
+        LimeSurveyBuilder.add_question_group!(docroot, group, iterator)
+
+        @test iterator.survey_id == 1
+        @test iterator.group_id == 2
+        @test iterator.question_id == 3
+        @test iterator.subquestion_id == 4
+        @test iterator.scale_id == 5
+        @test iterator.counter == 6
+        @test iterator.order == 7
+
+        @test countnodes(docroot) == 1
+        groups_node = first(nodes(docroot))
+        @test nodename(groups_node) == "groups"
+        @test countnodes(groups_node) == 1
+
+        rows_node = first(nodes(groups_node))
+        row_node = first(nodes(rows_node))
+        @test nodename.(nodes(row_node)) == ["gid", "sid", "group_order", "group_name", "language"]
+        @test nodecontent.(nodes(row_node)) == ["$(iterator.group_id)", "$(iterator.survey_id)", "$(iterator.order)", "group title", "en"]
+
+        # with description
+        group = question_group(101, "second group", description="some description")
+        LimeSurveyBuilder.add_question_group!(docroot, group, iterator)
+
+        row_node = last(nodes(rows_node))
+        @test nodename.(nodes(row_node)) == ["gid", "sid", "group_order", "group_name", "language", "description"]
+        @test nodecontent.(nodes(row_node)) == ["$(iterator.group_id)", "$(iterator.survey_id)", "$(iterator.order)", "second group", "en", "some description"]
+
+        # with questions
+        n = 5
+        group = question_group(1, "title") do
+            (short_text_question("q$i", "question $i") for i in 1:n)
+        end
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+
+        iterator = LimeSurveyBuilder.SurveyIterator(1, 1, 1, 1, 1, 1, 1)
+        LimeSurveyBuilder.add_question_group!(docroot, group, iterator)
+
+        @test iterator.survey_id == 1
+        @test iterator.group_id == 1
+        @test iterator.question_id == n + 1
+        @test iterator.subquestion_id == 1
+        @test iterator.scale_id == 1
+        @test iterator.counter == n + 1
+        @test iterator.order == n
+
+        questions_node = last(nodes(docroot))
+        rows_node = first(nodes(questions_node))
+        row_nodes = nodes(rows_node)
+
+        for (i, row) in enumerate(row_nodes)
+            row_data = nodes(row)
+            @test nodename(row_data[1]) == "qid"
+            @test nodecontent(row_data[1]) == string(i + 1)
+
+            @test nodename(row_data[9]) == "question_order"
+            @test nodecontent(row_data[9]) == string(i)
+        end
+    end
+
+    @testset "add_question!" begin end
+    @testset "add_subquestion!" begin end
+    @testset "add_response_scale!" begin
+        scale = response_scale() do
+            response_option("o1", "option 1"),
+            response_option("o2", "option 2", default=true),
+            response_option("o3", "option 3")
+        end
+
+        iterator = LimeSurveyBuilder.SurveyIterator(0)
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+
+        LimeSurveyBuilder.add_response_scale!(docroot, scale, iterator)
+        @test countnodes(docroot) == 2
+        @test nodename.(nodes(docroot)) == ["answers", "defaultvalues"]
+
+        answers_node = first(nodes(docroot))
+        answer_nodes = nodes(first(nodes(answers_node)))
+        @test length(answer_nodes) == 3
+
+        for (i, row) in enumerate(answer_nodes)
+            answer_data = nodes(row)
+            @test nodecontent(answer_data[4]) == "$i"
+        end
+
+        defaults_node = last(nodes(docroot))
+        default_nodes = nodes(first(nodes(defaults_node)))
+        @test length(default_nodes) == 1
+    end
+
+    @testset "add_response_option!" begin
+        option = response_option("o1", "option 1")
+        iterator = LimeSurveyBuilder.SurveyIterator(1)
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+
+        LimeSurveyBuilder.add_response_option!(docroot, option, iterator)
+        @test countnodes(docroot) == 1
+        @test nodename.(nodes(docroot)) == ["answers"]
+
+        option = response_option("o2", "option 2", default=true)
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+
+        LimeSurveyBuilder.add_response_option!(docroot, option, iterator)
+        @test countnodes(docroot) == 2
+        @test nodename.(nodes(docroot)) == ["answers", "defaultvalues"]
+    end
+
+    @testset "add_answer!" begin
+        option = response_option("o1", "option 1")
+        iterator = LimeSurveyBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+
+        LimeSurveyBuilder.add_answer!(docroot, option, iterator)
+        @test countnodes(docroot) == 1
+
+        answers_node = first(nodes(docroot))
+        @test nodename(answers_node) == "answers"
+
+        rows_node = first(nodes(answers_node))
+        @test countnodes(rows_node) == 1
+
+        answer_node = first(nodes(rows_node))
+        @test nodename(answer_node) == "row"
+
+        answer_data = nodes(answer_node)
+        @test nodename.(answer_data) == ["qid", "code", "answer", "sortorder", "language", "scale_id"]
+        @test nodecontent.(answer_data) == ["$(iterator.question_id)", "o1", "option 1", "$(iterator.order)", "en", "$(iterator.scale_id)"]
+    end
+
+    @testset "add_default_value!" begin
+        option = response_option("o1", "option 1")
+        iterator = LimeSurveyBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+
+        default_node = LimeSurveyBuilder.add_default_value!(docroot, option, iterator)
+        @test nodename(first(nodes(docroot))) == "defaultvalues"
+
+        default_data = nodes(default_node)
+        @test nodename.(default_data) == ["qid", "scale_id", "sqid", "language", "defaultvalue"]
+        @test nodecontent.(default_data) == ["$(iterator.question_id)", "$(iterator.scale_id)", "$(iterator.subquestion_id)", "en", "o1"]
+    end
+
+    @testset "add_language_settings!" begin end
+    @testset "write" begin end
+    @testset "xml" begin end
 end

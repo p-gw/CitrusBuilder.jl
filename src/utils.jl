@@ -1,3 +1,5 @@
+VectorOrElement{T} = Union{T,Vector{T}} where {T}
+
 isnumber(c::AbstractChar) = !isnothing(tryparse(Int, string(c)))
 isalphanumeric(c::AbstractChar) = isletter(c) || isnumber(c)
 validate(code::AbstractString) = isletter(first(code)) && all(isalphanumeric, code)
@@ -9,7 +11,7 @@ function tovector(child::T)::Vector{T} where {T}
 end
 
 function tovector(children::Vector{T})::Vector{T} where {T}
-    return T[child for child in children]
+    return children
 end
 
 function tovector(children::Tuple{Vararg{T}})::Vector{T} where {T}

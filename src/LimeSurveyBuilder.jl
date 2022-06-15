@@ -55,6 +55,9 @@ export short_text_question
 export long_text_question
 export huge_text_question
 export multiple_short_text_question
+export five_point_choice_question
+export dropdown_list_question
+export radio_list_question
 
 # xml
 export xml
@@ -71,6 +74,7 @@ end
 default_language() = DEFAULT_LANGUAGE[]
 
 include("survey_component.jl")
+include("utils.jl")
 include("language_settings.jl")
 include("response_scale.jl")
 include("subquestion.jl")
@@ -79,6 +83,5 @@ include("question_group.jl")
 include("survey.jl")
 include("xml.jl")
 
-include("utils.jl")
 
 end

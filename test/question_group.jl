@@ -1,4 +1,4 @@
-@testset "Question Groups" begin
+@testset "Question Group Constructors" begin
     g = question_group(1, "", description="")
     @test id(g) == 1
     @test title(g) == ""

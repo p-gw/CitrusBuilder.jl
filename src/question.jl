@@ -30,113 +30,164 @@ has_subquestions(question::Question) = length(question.subquestions) > 0
 has_response_options(question::Question) = length(question.options) > 0
 
 # text questions
-function short_text_question(id, title::String; help=nothing, kwargs...)
-    setting = language_setting(default_language(), title; help)
-    return Question(; id, type="S", language_settings=[setting], kwargs...)
+function short_text_question(id, language_settings::VectorOrElement{LanguageSetting}; kwargs...)
+    return Question(;
+        id,
+        type="S",
+        language_settings=tovector(language_settings),
+        kwargs...
+    )
 end
 
-function short_text_question(id, language_settings::Vector{LanguageSetting}; kwargs...)
-    return Question(; id, type="S", language_settings, kwargs...)
+function short_text_question(id, title::String; help=nothing, kwargs...)
+    setting = language_setting(default_language(), title; help)
+    return short_text_question(id, setting; kwargs...)
+end
+
+function long_text_question(id, language_settings::VectorOrElement{LanguageSetting}; kwargs...)
+    return Question(;
+        id,
+        type="T",
+        language_settings=tovector(language_settings),
+        kwargs...
+    )
 end
 
 function long_text_question(id, title::String; help=nothing, kwargs...)
     setting = language_setting(default_language(), title; help)
-    return Question(; id, type="T", language_settings=[setting], kwargs...)
+    return long_text_question(id, setting; kwargs...)
 end
 
-function long_text_question(id, language_settings::Vector{LanguageSetting}; kwargs...)
-    return Question(; id, type="T", language_settings, kwargs...)
+function huge_text_question(id, language_settings::VectorOrElement{LanguageSetting}; kwargs...)
+    return Question(;
+        id,
+        type="U",
+        language_settings=tovector(language_settings),
+        kwargs...
+    )
 end
 
 function huge_text_question(id, title::String; help=nothing, kwargs...)
     setting = language_setting(default_language(), title; help)
-    return Question(; id, type="U", language_settings=[setting], kwargs...)
+    return huge_text_question(id, setting; kwargs...)
 end
 
-function huge_text_question(id, language_settings::Vector{LanguageSetting}; kwargs...)
-    return Question(; id, type="U", language_settings, kwargs...)
+
+function multiple_short_text_question(id, language_settings::VectorOrElement{LanguageSetting}; subquestions, kwargs...)
+    return Question(;
+        id,
+        type="Q",
+        language_settings=tovector(language_settings),
+        subquestions=tovector(subquestions),
+        kwargs...
+    )
 end
 
 function multiple_short_text_question(id, title::String; subquestions, help=nothing, kwargs...)
     setting = language_setting(default_language(), title; help)
-    return Question(; id, type="Q", language_settings=[setting], subquestions, kwargs...)
+    return multiple_short_text_question(id, setting; subquestions, kwargs...)
+end
+
+function multiple_short_text_question(children::Function, id, language_settings::VectorOrElement{LanguageSetting}; kwargs...)
+    return multiple_short_text_question(id, language_settings; subquestions=tovector(children()), kwargs...)
 end
 
 function multiple_short_text_question(children::Function, id, title::String; help=nothing, kwargs...)
     setting = language_setting(default_language(), title; help)
-    return Question(; id, type="Q", language_settings=[setting], subquestions=tovector(children()), kwargs...)
-end
-
-function multiple_short_text_question(id, language_settings::Vector{LanguageSetting}; subquestions, kwargs...)
-    return Question(; id, type="Q", language_settings, subquestions, kwargs...)
+    return multiple_short_text_question(id, setting; subquestions=tovector(children()), kwargs...)
 end
 
 # single choice questions
-five_point_choice_question(; kwargs...) = Question(; type="5", kwargs...)
-
-function dropdown_list_question(; options, kwargs...)
-    return Question(; type="!", options, kwargs...)
+function five_point_choice_question(id, language_settings::VectorOrElement{LanguageSetting}; kwargs...)
+    return Question(;
+        id,
+        type="5",
+        language_settings=tovector(language_settings),
+        kwargs...
+    )
 end
 
-function dropdown_list_question(children::Function; kwargs...)
-    return Question(; type="!", options=tovector(children()), kwargs...)
+function five_point_choice_question(id, title::String; help=nothing, kwargs...)
+    setting = language_setting(default_language(), title; help)
+    return five_point_choice_question(id, setting; kwargs...)
 end
 
-function radio_list_question(; options, comment=false, kwargs...)
-    question_type = comment ? "O" : "L"
-    return Question(; type=question_type, options, kwargs...)
+function dropdown_list_question(id, language_settings::VectorOrElement{LanguageSetting}, options::ResponseScale; kwargs...)
+    return Question(;
+        id,
+        type="!",
+        language_settings=tovector(language_settings),
+        options=tovector(options),
+        kwargs...
+    )
 end
 
-function radio_list_question(children::Function; comment=false, kwargs...)
-    return radio_list_question(; options=tovector(children()), comment, kwargs...)
+function dropdown_list_question(id, title::String, options::ResponseScale; help=nothing, kwargs...)
+    setting = language_setting(default_language(), title; help)
+    return dropdown_list_question(id, setting, options; kwargs...)
+end
+
+function radio_list_question(id, language_settings::VectorOrElement{LanguageSetting}, options::ResponseScale; comment=false, kwargs...)
+    return Question(;
+        id,
+        type=comment ? "O" : "L",
+        language_settings=tovector(language_settings),
+        options=tovector(options),
+        kwargs...
+    )
+end
+
+function radio_list_question(id, title::String, options::ResponseScale; help=nothing, kwargs...)
+    setting = language_setting(default_language(), title; help)
+    return radio_list_question(id, setting, options; kwargs...)
 end
 
 # multiple choice questions
-function multiple_choice_question(; options, comments=false, kwargs...)
-    question_type = comments ? "P" : "M"
-    return Question(; type=question_type, options, kwargs...)
-end
+# function multiple_choice_question(; options, comments=false, kwargs...)
+#     question_type = comments ? "P" : "M"
+#     return Question(; type=question_type, options, kwargs...)
+# end
 
-# array questions
-function array_question(; subquestions, options, bycolumn=false, type="default", kwargs...)
-    if (type != "default" && bycolumn)
-        error("columnwise array question can only be of type 'default'")
-    end
+# # array questions
+# function array_question(; subquestions, options, bycolumn=false, type="default", kwargs...)
+#     if (type != "default" && bycolumn)
+#         error("columnwise array question can only be of type 'default'")
+#     end
 
-    if (type == "default" && !bycolumn)
-        question_type = "F"
-    elseif (type == "default" && bycolumn)
-        question_type = "H"
-    elseif (type == "dropdown")
-        question_type = ":"
-    elseif (type == "text")
-        question_type = ";"
-    else
-        error("unknown question type")
-    end
+#     if (type == "default" && !bycolumn)
+#         question_type = "F"
+#     elseif (type == "default" && bycolumn)
+#         question_type = "H"
+#     elseif (type == "dropdown")
+#         question_type = ":"
+#     elseif (type == "text")
+#         question_type = ";"
+#     else
+#         error("unknown question type")
+#     end
 
-    return Question(; type=question_type, subquestions, options, kwargs...)
-end
+#     return Question(; type=question_type, subquestions, options, kwargs...)
+# end
 
-function array_question(children::Function; options, bycolumn=false, type="default", kwargs...)
-    return array_question(; subquestions=tovector(children()), options, bycolumn, type, kwargs...)
-end
+# function array_question(children::Function; options, bycolumn=false, type="default", kwargs...)
+#     return array_question(; subquestions=tovector(children()), options, bycolumn, type, kwargs...)
+# end
 
-function array_five_point_choice_question(; subquestions, kwargs...)
-    return Question(; type="A", subquestions, kwargs...)
-end
+# function array_five_point_choice_question(; subquestions, kwargs...)
+#     return Question(; type="A", subquestions, kwargs...)
+# end
 
-function array_five_point_choice_question(children::Function; kwargs...)
-    return array_five_point_choice_question(; subquestions=tovector(children()), kwargs...)
-end
+# function array_five_point_choice_question(children::Function; kwargs...)
+#     return array_five_point_choice_question(; subquestions=tovector(children()), kwargs...)
+# end
 
-function array_ten_point_choice_question(; subquestions, kwargs...)
-    return Question(; type="B", subquestions, kwargs...)
-end
+# function array_ten_point_choice_question(; subquestions, kwargs...)
+#     return Question(; type="B", subquestions, kwargs...)
+# end
 
-function array_ten_point_choice_question(children::Function; kwargs...)
-    return array_ten_point_choice_question(; subquestions=tovector(children()), kwargs...)
-end
+# function array_ten_point_choice_question(children::Function; kwargs...)
+#     return array_ten_point_choice_question(; subquestions=tovector(children()), kwargs...)
+# end
 
 # yes/no/uncertain
 # increase/same/decrease

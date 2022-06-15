@@ -1,4 +1,4 @@
-@testset "Response Scale Construction" begin
+@testset "Response Scale Constructors" begin
     @testset "response options" begin
         option = response_option("a1", "response option")
         @test id(option) == option.id == "a1"
