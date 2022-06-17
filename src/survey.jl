@@ -40,13 +40,6 @@ function Base.show(io::IO, survey::Survey)
         for (j, question) in enumerate(group.children)
             p = prefix(j, length(group.children))
             println(io, "    $p $(title(question)) (id: $(question.id))")
-
-            # if question isa ArrayQuestion
-            #     for (k, subquestion) in enumerate(question.subquestions)
-            #         p = prefix(k, length(question.subquestions))
-            #         println(io, "        $p $(subquestion.question) (code: $(subquestion.code))")
-            #     end
-            # end
         end
     end
 end
