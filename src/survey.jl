@@ -1,23 +1,23 @@
 struct Survey <: AbstractSurveyComponent
     id::Int
-    language_settings::Vector{LanguageSetting}
+    language_settings::LanguageSettings
     children::Vector{QuestionGroup}
 end
 
 function survey(id, title::String; children=QuestionGroup[])
-    language = language_setting(default_language(), title)
-    return Survey(id, [language], children)
+    settings = language_settings(default_language(), title)
+    return Survey(id, settings, children)
 end
 
 function survey(children::Function, id, title::String; kwargs...)
     return survey(id, title; children=tovector(children()))
 end
 
-function survey(id, language_settings::Vector{LanguageSetting}; children=QuestionGroup[])
+function survey(id, language_settings::LanguageSettings; children=QuestionGroup[])
     return Survey(id, language_settings, children)
 end
 
-function survey(children::Function, id, language_settings::Vector{LanguageSetting})
+function survey(children::Function, id, language_settings::LanguageSettings)
     return survey(id, language_settings, children=tovector(children()))
 end
 

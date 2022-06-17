@@ -11,7 +11,7 @@ struct SubQuestion <: AbstractQuestion
     id::String
     type::String
     relevance::String
-    language_settings::Vector{LanguageSetting}
+    language_settings::LanguageSettings
     # TODO: validate id
 end
 
@@ -20,9 +20,14 @@ end
 
 Construct a subquestion using the default survey language.
 """
-function subquestion(id::String, title::String; relevance="1")
-    setting = language_setting(DEFAULT_LANGUAGE[], title)
-    return SubQuestion(id, "T", relevance, tovector(setting))
+function subquestion(id::String, title::String; default=nothing, checked::Bool=false, relevance="1")
+    if checked
+        isnothing(default) || throw(ArgumentError("Arguments 'default' and 'checked' are incompatible"))
+        default = "Y"
+    end
+
+    settings = language_settings(default_language(), title; default)
+    return SubQuestion(id, "T", relevance, settings)
 end
 
 """
@@ -30,7 +35,7 @@ end
 
 Construct a multi-language subquestion.
 """
-function subquestion(id::String, language_settings::Vector{LanguageSetting}; relevance="1")
+function subquestion(id::String, language_settings::LanguageSettings; relevance="1")
     return SubQuestion(id, "T", relevance, language_settings)
 end
 

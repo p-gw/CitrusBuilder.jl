@@ -5,6 +5,7 @@ using Test
 using EzXML
 
 @testset "LimeSurveyBuilder.jl" begin
+    include("language_settings.jl")
     include("utils.jl")
     include("subquestion.jl")
     include("survey_component.jl")

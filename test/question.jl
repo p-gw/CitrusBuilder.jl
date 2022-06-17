@@ -1,10 +1,9 @@
-
 @testset "Question Constructors" begin
     @testset "Text questions" begin
-        language_settings = [
+        settings = language_settings([
             language_setting("de", "Titel", help="Hilfetext"),
             language_setting("en", "title", help="help text")
-        ]
+        ])
 
         # simple text questions
         question_type = [
@@ -28,7 +27,7 @@
             @test_throws ErrorException title(q, "de")
 
 
-            q = short_text_question("id2", language_settings, mandatory=true)
+            q = short_text_question("id2", settings, mandatory=true)
             @test type(q) == "S"
             @test id(q) == "id2"
             @test is_mandatory(q) == true
@@ -70,7 +69,7 @@
             @test title(sq) == "title $i"
         end
 
-        q = multiple_short_text_question("id5", language_settings; subquestions=[subquestion("sq1", "title 1")])
+        q = multiple_short_text_question("id5", settings; subquestions=[subquestion("sq1", "title 1")])
         @test has_subquestions(q) == true
         @test length(q.subquestions) == 1
         @test languages(q) == ["de", "en"]
@@ -87,10 +86,10 @@
             @test has_subquestions(q) == false
             @test has_response_options(q) == false
 
-            q = five_point_choice_question("q2", [
+            q = five_point_choice_question("q2", language_settings([
                 language_setting("de", "Frage"),
                 language_setting("en", "question", help="some help")
-            ])
+            ]))
 
             @test type(q) == "5"
             @test id(q) == "q2"
@@ -112,10 +111,10 @@
             @test title(q) == "dropdown question"
             @test length(q.options) == 1
 
-            q = dropdown_list_question("q2", [
+            q = dropdown_list_question("q2", language_settings([
                     language_setting("de", "Auswahlliste"),
                     language_setting("en", "dropdown list")
-                ], scale)
+                ]), scale)
 
             @test type(q) == "!"
             @test id(q) == "q2"
@@ -138,11 +137,52 @@
             @test type(q) == "O"
             @test help(q) == "help"
 
-            q = radio_list_question("q3", language_setting("de", "Titel"), scale)
+            q = radio_list_question("q3", language_settings("de", "Titel"), scale)
             @test title(q) == title(q, "de") == "Titel"
         end
     end
 
+    @testset "Multiple choice questions" begin
+        @testset "multiple_choice_question" begin
+            q = multiple_choice_question("q1", "mcq") do
+                subquestion("", "")
+            end
+            @test type(q) == "M"
+            @test id(q) == "q1"
+            @test title(q) == "mcq"
+            @test has_subquestions(q) == true
+            @test length(q.subquestions) == 1
+            @test has_response_options(q) == false
+
+            q = multiple_choice_question("q2", "mcq", comments=true, help="help") do
+                subquestion("", ""),
+                subquestion("", "")
+            end
+
+            @test type(q) == "P"
+            @test id(q) == "q2"
+            @test has_subquestions(q) == true
+            @test length(q.subquestions) == 2
+            @test has_help(q) == true
+            @test help(q) == "help"
+
+            q = multiple_choice_question("q3", language_settings([
+                    language_setting("en", "title"),
+                    language_setting("de", "Titel", help="Hilfetext")
+                ]), subquestions=[subquestion("", "")])
+
+            @test languages(q) == ["en", "de"]
+            @test default_language(q) == "en"
+            @test has_subquestions(q) == true
+            @test length(q.subquestions) == 1
+            @test title(q) == "title"
+            @test title(q, "de") == "Titel"
+            @test has_help(q) == false
+            @test has_help(q, "de") == true
+            @test isnothing(help(q))
+            @test help(q, "de") == "Hilfetext"
+        end
+    end
     #     @testset "Mask Questions" begin
     #         @testset "Date Select" begin
     #             # check defaults

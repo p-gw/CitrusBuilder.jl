@@ -24,8 +24,3 @@ end
 
 tovector(::Nothing) = return []
 
-function find_language_setting(language::String, component::AbstractSurveyComponent)
-    language_id = findfirst(x -> x.language == language, component.language_settings)
-    isnothing(language_id) && error("Invalid language")
-    return component.language_settings[language_id]
-end

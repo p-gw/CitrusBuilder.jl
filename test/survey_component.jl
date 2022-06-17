@@ -2,13 +2,13 @@
     @testset "Accessor functions" begin
         struct TestComponent <: LimeSurveyBuilder.AbstractSurveyComponent
             id::Int
-            language_settings::Vector{LimeSurveyBuilder.LanguageSetting}
+            language_settings::LimeSurveyBuilder.LanguageSettings
         end
 
-        component = TestComponent(1, [
+        component = TestComponent(1, language_settings([
             language_setting("de", "Titel", description="Eine Beschreibung", help="Hilfetext"),
             language_setting("en", "title")
-        ])
+        ]))
 
         @test id(component) == 1
         @test languages(component) == ["de", "en"]

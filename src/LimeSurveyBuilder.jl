@@ -30,17 +30,22 @@ export relevance
 export type
 export help
 export description
+export default
 
 export has_help
 export has_description
+export same_default
+export has_default
 
 # language settings
 export language_setting
+export language_settings
 
 # response options
 export response_option
 export response_scale
 export is_default
+export default
 
 # subquestions
 export subquestion
@@ -58,20 +63,10 @@ export multiple_short_text_question
 export five_point_choice_question
 export dropdown_list_question
 export radio_list_question
+export multiple_choice_question
 
 # xml
 export xml
-
-
-const DEFAULT_LANGUAGE = Ref("en")
-
-function set_default_language!(lang::String)
-    @info "LimeSurvey default language set to '$(lang)'."
-    DEFAULT_LANGUAGE[] = lang
-    return nothing
-end
-
-default_language() = DEFAULT_LANGUAGE[]
 
 include("survey_component.jl")
 include("utils.jl")

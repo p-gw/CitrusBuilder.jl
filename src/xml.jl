@@ -135,11 +135,17 @@ function add_question!(root::EzXML.Node, question::Question, iterator::SurveyIte
         add_cdata_node!(question_node, "mandatory", is_mandatory(question) ? "Y" : "N")
         add_cdata_node!(question_node, "question_order", iterator.order)
         add_cdata_node!(question_node, "language", language)
+        add_cdata_node!(question_node, "scale_id", iterator.scale_id)
+        add_cdata_node!(question_node, "same_default", same_default(question) ? "1" : "0")
         add_cdata_node!(question_node, "relevance", question.relevance)
 
         if has_help(question, language)
             add_cdata_node!(question_node, "help", help(question, language))
         end
+    end
+
+    if has_default(question)
+        add_default_value!(root, question, iterator)
     end
 
     for (subquestion_order, subquestion) in enumerate(question.subquestions)
@@ -174,7 +180,11 @@ function add_subquestion!(root::EzXML.Node, subquestion::SubQuestion, iterator::
         add_cdata_node!(subquestion_node, "language", language)
         add_cdata_node!(subquestion_node, "relevance", subquestion.relevance)
         # scale_id
-        # same_default
+        add_cdata_node!(subquestion_node, "same_default", same_default(subquestion) ? "1" : "0")
+    end
+
+    if has_default(subquestion)
+        add_default_value!(root, subquestion, iterator)
     end
 
     return nothing
@@ -183,21 +193,21 @@ end
 function add_response_scale!(root::EzXML.Node, scale::ResponseScale, iterator::SurveyIterator)
     for (option_order, option) in enumerate(scale.options)
         iterator.order = option_order
-        add_response_option!(root, option, iterator)
+        add_answer!(root, option, iterator)
     end
-end
 
-function add_response_option!(root::EzXML.Node, option::ResponseOption, iterator::SurveyIterator)
-    add_answer!(root, option, iterator)
-    is_default(option) && add_default_value!(root, option, iterator)
+    if has_default(scale)
+        add_default_value!(root, scale, iterator)
+    end
+
     return nothing
 end
 
 function add_answer!(root::EzXML.Node, option::ResponseOption, iterator::SurveyIterator)
     answers_node = add_unique_node!(root, "answers")
-    answer_node = add_row_node!(answers_node)
 
     for language in languages(option)
+        answer_node = add_row_node!(answers_node)
         add_cdata_node!(answer_node, "qid", iterator.question_id)
         add_cdata_node!(answer_node, "code", option.id)
         add_cdata_node!(answer_node, "answer", title(option, language))
@@ -207,23 +217,24 @@ function add_answer!(root::EzXML.Node, option::ResponseOption, iterator::SurveyI
         # assessment value
     end
 
-    return answer_node
+    return nothing
 end
 
-function add_default_value!(root::EzXML.Node, option::ResponseOption, iterator::SurveyIterator)
+function add_default_value!(root::EzXML.Node, component::AbstractSurveyComponent, iterator::SurveyIterator)
     defaults_node = add_unique_node!(root, "defaultvalues")
-    default_node = add_row_node!(defaults_node)
 
-    for language in languages(option)
-        add_cdata_node!(default_node, "qid", iterator.question_id)
-        add_cdata_node!(default_node, "scale_id", iterator.scale_id)
-        add_cdata_node!(default_node, "sqid", iterator.subquestion_id)
-        add_cdata_node!(default_node, "language", language)
-        add_cdata_node!(default_node, "defaultvalue", option.id)
-        # specialtype
+    for language in languages(component)
+        if has_default(component, language)
+            default_node = add_row_node!(defaults_node)
+            add_cdata_node!(default_node, "qid", iterator.question_id)
+            add_cdata_node!(default_node, "scale_id", iterator.scale_id)
+            add_cdata_node!(default_node, "sqid", iterator.subquestion_id)
+            add_cdata_node!(default_node, "language", language)
+            add_cdata_node!(default_node, "defaultvalue", default(component, language))
+        end
     end
 
-    return default_node
+    return defaults_node
 end
 
 function add_language_settings!(root::EzXML.Node, survey::Survey)

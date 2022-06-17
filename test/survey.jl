@@ -6,12 +6,12 @@
         @test default_language(s) == "en"
         @test s.children == LimeSurveyBuilder.QuestionGroup[]
 
-        language_settings = [
+        settings = language_settings([
             language_setting("en", "survey title"),
             language_setting("de", "Umfragetitel")
-        ]
+        ])
 
-        s = survey(100001, language_settings)
+        s = survey(100001, settings)
         @test s.id == 100001
         @test languages(s) == ["en", "de"]
         @test default_language(s) == "en"
@@ -30,11 +30,11 @@
             @test title(s.children[i]) == "qg$i"
         end
 
-        language_settings = [
+        settings = language_settings([
             language_setting("de", "Umfragetitel")
-        ]
+        ])
 
-        s = survey(100003, language_settings) do
+        s = survey(100003, settings) do
             question_group(1, "qg1")
         end
 

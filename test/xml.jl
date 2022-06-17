@@ -92,10 +92,10 @@
         doc = LimeSurveyBuilder.create_document!()
         docroot = root(doc)
 
-        s = survey(100000, [
+        s = survey(100000, language_settings([
             language_setting("en", "title"),
             language_setting("de", "Titel")
-        ])
+        ]))
 
         languages_node = LimeSurveyBuilder.add_languages!(docroot, s)
         @test nodename(languages_node) == "languages"
@@ -111,10 +111,10 @@
         doc = LimeSurveyBuilder.create_document!()
         docroot = root(doc)
 
-        s = survey(100000, [
+        s = survey(100000, language_settings([
             language_setting("en", "title"),
             language_setting("de", "Titel")
-        ])
+        ]))
 
         LimeSurveyBuilder.add_header!(docroot, s)
         @test countnodes(docroot) == 2
@@ -164,10 +164,10 @@
         @test nodecontent(survey_data[2]) == "en"
 
         # with language settings
-        s = survey(100001, [
+        s = survey(100001, language_settings([
             language_setting("en", "title"),
             language_setting("de", "Titel")
-        ])
+        ]))
 
         doc = LimeSurveyBuilder.create_document!()
         docroot = root(doc)
@@ -293,9 +293,9 @@
     @testset "add_question!" begin end
     @testset "add_subquestion!" begin end
     @testset "add_response_scale!" begin
-        scale = response_scale() do
+        scale = response_scale(default="o2") do
             response_option("o1", "option 1"),
-            response_option("o2", "option 2", default=true),
+            response_option("o2", "option 2"),
             response_option("o3", "option 3")
         end
 
@@ -320,27 +320,17 @@
         defaults_node = last(nodes(docroot))
         default_nodes = nodes(first(nodes(defaults_node)))
         @test length(default_nodes) == 1
-    end
 
-    @testset "add_response_option!" begin
-        option = response_option("o1", "option 1")
-        iterator = LimeSurveyBuilder.SurveyIterator(1)
+        # no defaultvalues node without default
+        scale = response_scale() do
+            response_option("o1", "option 1")
+        end
 
         doc = LimeSurveyBuilder.create_document!()
         docroot = root(doc)
+        LimeSurveyBuilder.add_response_scale!(docroot, scale, iterator)
 
-        LimeSurveyBuilder.add_response_option!(docroot, option, iterator)
-        @test countnodes(docroot) == 1
         @test nodename.(nodes(docroot)) == ["answers"]
-
-        option = response_option("o2", "option 2", default=true)
-
-        doc = LimeSurveyBuilder.create_document!()
-        docroot = root(doc)
-
-        LimeSurveyBuilder.add_response_option!(docroot, option, iterator)
-        @test countnodes(docroot) == 2
-        @test nodename.(nodes(docroot)) == ["answers", "defaultvalues"]
     end
 
     @testset "add_answer!" begin
@@ -368,21 +358,83 @@
     end
 
     @testset "add_default_value!" begin
-        option = response_option("o1", "option 1")
+        # question
+        q = short_text_question("q1", language_settings([
+            language_setting("en", "", default="some default"),
+            language_setting("de", "")
+        ]))
+
         iterator = LimeSurveyBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
 
         doc = LimeSurveyBuilder.create_document!()
         docroot = root(doc)
+        defaults_node = LimeSurveyBuilder.add_default_value!(docroot, q, iterator)
 
-        default_node = LimeSurveyBuilder.add_default_value!(docroot, option, iterator)
+        @test nodename(defaults_node) == "defaultvalues"
+        @test countnodes(defaults_node) == 1
+
+        rows_node = first(nodes(defaults_node))
+        @test countnodes(rows_node) == 1
+
+        row_node = first(nodes(rows_node))
+        row_data = nodes(row_node)
+        @test nodename.(row_data) == ["qid", "scale_id", "sqid", "language", "defaultvalue"]
+        @test nodecontent.(row_data) == string.([iterator.question_id, iterator.scale_id, iterator.subquestion_id, "en", "some default"])
+
+        # subquestion
+        # response scale
+        scale = response_scale(default="o3") do
+            (response_option("o$i", "option $i") for i in 1:3)
+        end
+
+        iterator = LimeSurveyBuilder.SurveyIterator(0)
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+        defaults_node = LimeSurveyBuilder.add_default_value!(docroot, scale, iterator)
         @test nodename(first(nodes(docroot))) == "defaultvalues"
 
-        default_data = nodes(default_node)
-        @test nodename.(default_data) == ["qid", "scale_id", "sqid", "language", "defaultvalue"]
-        @test nodecontent.(default_data) == ["$(iterator.question_id)", "$(iterator.scale_id)", "$(iterator.subquestion_id)", "en", "o1"]
+        rows_node = first(nodes(defaults_node))
+        row_node = first(nodes(rows_node))
+        row_data = nodes(row_node)
+
+        @test nodename.(row_data) == ["qid", "scale_id", "sqid", "language", "defaultvalue"]
+        @test nodecontent.(row_data) == string.([iterator.question_id, iterator.scale_id, iterator.subquestion_id, "en", "o3"])
     end
 
-    @testset "add_language_settings!" begin end
-    @testset "write" begin end
+    @testset "add_language_settings!" begin
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+
+        s = survey(100000, "title")
+        LimeSurveyBuilder.add_language_settings!(docroot, s)
+
+        @test countnodes(docroot) == 1
+
+        settings_node = first(nodes(docroot))
+        @test nodename(settings_node) == "surveys_languagesettings"
+
+        rows_node = first(nodes(settings_node))
+        row_node = first(nodes(rows_node))
+        @test nodename.(nodes(row_node)) == ["surveyls_survey_id", "surveyls_language", "surveyls_title"]
+        @test nodecontent.(nodes(row_node)) == ["100000", "en", "title"]
+
+        s = survey(100001, language_settings([
+            language_setting("en", "title"),
+            language_setting("de", "Titel")
+        ]))
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+        LimeSurveyBuilder.add_language_settings!(docroot, s)
+        settings_node = first(nodes(docroot))
+        rows_node = first(nodes(settings_node))
+        @test countnodes(rows_node) == 2
+        rows = nodes(rows_node)
+
+        @test nodecontent.(nodes(rows[1])) == ["100001", "en", "title"]
+        @test nodecontent.(nodes(rows[2])) == ["100001", "de", "Titel"]
+    end
+
     @testset "xml" begin end
+    @testset "write" begin end
 end

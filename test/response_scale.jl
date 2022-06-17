@@ -5,7 +5,6 @@
         @test title(option) == "response option"
         @test languages(option) == ["en"]
         @test default_language(option) == "en"
-        @test is_default(option) == option.default == false
     end
 
     @testset "response scales" begin
