@@ -179,7 +179,7 @@ function add_subquestion!(root::EzXML.Node, subquestion::SubQuestion, iterator::
         add_cdata_node!(subquestion_node, "question_order", iterator.order)
         add_cdata_node!(subquestion_node, "language", language)
         add_cdata_node!(subquestion_node, "relevance", subquestion.relevance)
-        # scale_id
+        add_cdata_node!(subquestion_node, "scale_id", subquestion.scale_id)
         add_cdata_node!(subquestion_node, "same_default", same_default(subquestion) ? "1" : "0")
     end
 

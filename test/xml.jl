@@ -291,7 +291,35 @@
     end
 
     @testset "add_question!" begin end
-    @testset "add_subquestion!" begin end
+
+    @testset "add_subquestion!" begin
+        sq = subquestion("sq", "subquestion")
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+        iterator = LimeSurveyBuilder.SurveyIterator(0)
+
+        LimeSurveyBuilder.add_subquestion!(docroot, sq, iterator)
+        @test countnodes(docroot) == 1
+
+        subquestions_node = first(nodes(docroot))
+        @test nodename(subquestions_node) == "subquestions"
+        @test countnodes(subquestions_node) == 1
+
+        rows_node = first(nodes(subquestions_node))
+        row_node = first(nodes(rows_node))
+        row_data = nodes(row_node)
+
+        @test nodename.(row_data) == ["parent_qid", "qid", "sid", "gid", "type", "title", "question", "question_order", "language", "relevance", "scale_id", "same_default"]
+        @test nodecontent.(row_data) == ["0", "0", "0", "0", "T", "sq", "subquestion", "0", "en", "1", "0", "0"]
+
+        sq = subquestion("sq2", "subquestion 2", scale_id=1)
+        LimeSurveyBuilder.add_subquestion!(docroot, sq, iterator)
+        @test countnodes(rows_node) == 2
+
+        row_node = nodes(rows_node)[2]
+        @test nodecontent(nodes(row_node)[11]) == "1" # scale_id
+    end
+
     @testset "add_response_scale!" begin
         scale = response_scale(default="o2") do
             response_option("o1", "option 1"),
