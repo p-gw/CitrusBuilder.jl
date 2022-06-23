@@ -243,6 +243,7 @@
             for (type, lstype) in valid_types
                 @test LimeSurveyBuilder.array_question_type(type) == lstype
             end
+
             @test_throws ErrorException LimeSurveyBuilder.array_question_type("unknown")
             @test_throws ErrorException LimeSurveyBuilder.array_question_type(1)
 
@@ -288,6 +289,17 @@
             @test_throws ErrorException array_question("q6", "", scale, type="dual") do
                 make_subquestions(1)
             end
+
+            q = array_question("q6", language_settings("en", "title"), scale) do
+                make_subquestions(2)
+            end
+
+            @test id(q) == "q6"
+            @test title(q) == "title"
+            @test languages(q) == ["en"]
+            @test has_subquestions(q) == true
+            @test has_response_options(q) == true
+            @test length(q.subquestions) == 2
         end
     end
 end
