@@ -183,124 +183,123 @@
             @test help(q, "de") == "Hilfetext"
         end
     end
-    #     @testset "Mask Questions" begin
-    #         @testset "Date Select" begin
-    #             # check defaults
-    #             ds = date_select(code="q1")
-    #             @test isnothing(ds.minimum)
-    #             @test isnothing(ds.maximum)
-    #             @test ds.type == "default"
-    #             @test ds.month_style == "default"
+    @testset "Array questions" begin
+        @testset "fixed scale types" begin
+            question_types = [
+                (array_five_point_choice_question, "A"),
+                (array_ten_point_choice_question, "B"),
+                (array_yes_no_question, "C"),
+                (array_increase_decrease_question, "E")
+            ]
 
-    #             ds = date_select(
-    #                 code="q1",
-    #                 minimum=Date(1900, 1, 1),
-    #                 maximum=today(),
-    #                 type="radio",
-    #                 month_style="long"
-    #             )
-    #             @test ds.minimum == Date(1900, 1, 1)
-    #             @test ds.maximum == today()
-    #             @test ds.type == "radio"
-    #             @test ds.month_style == "long"
-    #         end
-    #         @testset "File Upload" begin
-    #             f = file_upload(code="q1")
-    #             @test f.show_title == true
-    #             @test f.show_comment == true
-    #             @test f.max_filesize == 10240
-    #             @test f.min_files == 0
-    #             @test f.max_files == 1
-    #             @test f.allowed_filetypes == ["png", "gif", "doc", "odt", "jpg", "pdf", "png"]
+            for (f, question_type) in question_types
+                q = f("q1", language_settings("de", ""), subquestions=[
+                    subquestion("sq1", ""),
+                    subquestion("sq2", "")
+                ])
 
-    #             f = file_upload(
-    #                 code="q1",
-    #                 show_title=false,
-    #                 show_comment=false,
-    #                 max_filesize=100,
-    #                 min_files=10,
-    #                 max_files=20,
-    #                 allowed_filetypes="jpg"
-    #             )
-    #             @test f.show_title == false
-    #             @test f.show_comment == false
-    #             @test f.max_filesize == 100
-    #             @test f.min_files == 10
-    #             @test f.max_files == 20
-    #             @test f.allowed_filetypes == "jpg"
+                @test id(q) == "q1"
+                @test type(q) == question_type
+                @test has_subquestions(q) == true
+                @test has_response_options(q) == false
+                @test length(q.subquestions) == 2
 
-    #             @test_throws ErrorException file_upload(code="q1", max_files=1, min_files=10)
-    #             @test_throws ErrorException file_upload(code="q1", max_filesize=-10)
-    #         end
+                q = f("q2", "", subquestions=[subquestion("sq1", "")])
+                @test id(q) == "q2"
+                @test type(q) == question_type
+                @test has_subquestions(q) == true
+                @test has_response_options(q) == false
+                @test length(q.subquestions) == 1
 
-    #         @testset "Gender Select" begin
-    #             g = gender_select(code="q1")
-    #             @test g.type == "button"
+                q = f("q3", language_settings("en", "")) do
+                    (subquestion("sq$i", "subquestion $i") for i in 1:4)
+                end
+                @test id(q) == "q3"
+                @test type(q) == question_type
+                @test has_subquestions(q) == true
+                @test length(q.subquestions) == 4
 
-    #             g = gender_select(code="q1", type="radio")
-    #             @test g.type == "radio"
-    #         end
+                q = f("q4", "", mandatory=true) do
+                    (subquestion("sq$i", "subquestion $i") for i in 1:4)
+                end
+                @test id(q) == "q4"
+                @test type(q) == question_type
+                @test has_subquestions(q) == true
+                @test length(q.subquestions) == 4
+                @test is_mandatory(q) == true
+            end
+        end
 
-    #         @testset "Numerical Inputs" begin
-    #             # # single
-    #             n = numerical_input(code="q1")
-    #             @test isnothing(n.minimum) == true
-    #             @test isnothing(n.maximum) == true
-    #             @test isnothing(n.maximum_chars) == true
-    #             @test n.integer_only == false
+        @testset "custom scale types" begin
+            # question type inference
+            valid_types = [
+                ("default", "F"),
+                ("text", ";"),
+                ("dropdown", ":"),
+                ("dual", "1"),
+                ("bycolumn", "H")
+            ]
 
-    #             n = numerical_input(
-    #                 code="q1",
-    #                 minimum=0,
-    #                 maximum=120,
-    #                 maximum_chars=20,
-    #                 integer_only=true
-    #             )
-    #             @test n.minimum == 0
-    #             @test n.maximum == 120
-    #             @test n.maximum_chars == 20
-    #             @test n.integer_only == true
+            for (type, lstype) in valid_types
+                @test LimeSurveyBuilder.array_question_type(type) == lstype
+            end
 
-    #             @test_throws ErrorException numerical_input(code="q1", minimum=0.0, maximum=10.0, integer_only=true)
-    #             @test_throws ErrorException numerical_input(code="q1", minimum=10, maximum=0)
+            @test_throws ErrorException LimeSurveyBuilder.array_question_type("unknown")
+            @test_throws ErrorException LimeSurveyBuilder.array_question_type(1)
 
-    #             # multiple
-    #             n = multiple_numerical_input(code="q1") do
-    #                 subquestion(code="sq1", subquestion=""),
-    #                 subquestion(code="sq2", subquestion="")
-    #             end
-    #             @test length(n.subquestions) == 2
-    #             @test isnothing(n.minimum) == true
-    #             @test isnothing(n.maximum) == true
-    #             @test isnothing(n.maximum_chars) == true
-    #             @test isnothing(n.minimum_sum) == true
-    #             @test isnothing(n.maximum_sum) == true
-    #             @test n.integer_only == false
+            # single scale array questions
+            scale = response_scale([
+                response_option("o1", "option 1"),
+                response_option("o2", "option 2"),
+                response_option("o3", "option 3")
+            ])
 
-    #             n = multiple_numerical_input(
-    #                 code="q1",
-    #                 minimum=0,
-    #                 maximum=10,
-    #                 maximum_chars=100,
-    #                 minimum_sum=0,
-    #                 maximum_sum=50,
-    #                 integer_only=true
-    #             ) do
-    #                 subquestion(code="sq1", subquestion=""),
-    #                 subquestion(code="sq2", subquestion=""),
-    #                 subquestion(code="sq3", subquestion="")
-    #             end
-    #             @test length(n.subquestions) == 3
-    #             @test n.minimum == 0
-    #             @test n.maximum == 10
-    #             @test n.maximum_chars == 100
-    #             @test n.minimum_sum == 0
-    #             @test n.maximum_sum == 50
-    #             @test n.integer_only == true
+            make_subquestions(n) = (subquestion("sq$i", "subquestion $i") for i in 1:n)
 
-    #             @test_throws ErrorException multiple_numerical_input(code="q1", minimum=10, maximum=0)
-    #             @test_throws ErrorException multiple_numerical_input(code="q1", minimum_sum=10, maximum_sum=0)
-    #             @test_throws ErrorException multiple_numerical_input(code="q1", minimum_sum=10.0, maximum_sum=0.0)
-    #         end
-    #     end
+            q = array_question("q1", "title", scale) do
+                make_subquestions(3)
+            end
+            @test type(q) == "F"
+            @test title(q) == "title"
+            @test has_response_options(q) == true
+            @test has_subquestions(q) == true
+            @test length(q.subquestions) == 3
+            @test length(q.options) == 1
+
+            q = array_question("q2", "title", scale; type="default") do
+                make_subquestions(2)
+            end
+            @test type(q) == "F"
+
+            @test_throws ErrorException array_question("q3", "title", [scale, scale]) do
+                make_subquestions(5)
+            end
+
+            q = array_question("q4", "", scale; type="bycolumn") do
+                make_subquestions(1)
+            end
+            @test type(q) == "H"
+
+            q = array_question("q5", "", [scale, scale], type="dual") do
+                make_subquestions(10)
+            end
+            @test type(q) == "1"
+            @test length(q.options) == 2
+
+            @test_throws ErrorException array_question("q6", "", scale, type="dual") do
+                make_subquestions(1)
+            end
+
+            q = array_question("q6", language_settings("en", "title"), scale) do
+                make_subquestions(2)
+            end
+
+            @test id(q) == "q6"
+            @test title(q) == "title"
+            @test languages(q) == ["en"]
+            @test has_subquestions(q) == true
+            @test has_response_options(q) == true
+            @test length(q.subquestions) == 2
+        end
+    end
 end

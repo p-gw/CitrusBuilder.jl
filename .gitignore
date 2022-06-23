@@ -7,3 +7,7 @@
 template_survey.jl
 .vscode
 test_xml.jl
+
+*.lss
+*.lsq
+*.lsg

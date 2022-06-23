@@ -12,22 +12,8 @@ struct SubQuestion <: AbstractQuestion
     type::String
     relevance::String
     language_settings::LanguageSettings
+    scale_id::Int
     # TODO: validate id
-end
-
-"""
-    subquestion(; id, title, relevance = "1")
-
-Construct a subquestion using the default survey language.
-"""
-function subquestion(id::String, title::String; default=nothing, checked::Bool=false, relevance="1")
-    if checked
-        isnothing(default) || throw(ArgumentError("Arguments 'default' and 'checked' are incompatible"))
-        default = "Y"
-    end
-
-    settings = language_settings(default_language(), title; default)
-    return SubQuestion(id, "T", relevance, settings)
 end
 
 """
@@ -35,8 +21,23 @@ end
 
 Construct a multi-language subquestion.
 """
-function subquestion(id::String, language_settings::LanguageSettings; relevance="1")
-    return SubQuestion(id, "T", relevance, language_settings)
+function subquestion(id::String, language_settings::LanguageSettings; relevance="1", scale_id=0)
+    return SubQuestion(id, "T", relevance, language_settings, scale_id)
+end
+
+"""
+    subquestion(; id, title, relevance = "1")
+
+Construct a subquestion using the default survey language.
+"""
+function subquestion(id::String, title::String; default=nothing, checked=false, relevance="1", scale_id=0)
+    if checked
+        isnothing(default) || throw(ArgumentError("Arguments 'default' and 'checked' are incompatible"))
+        default = "Y"
+    end
+
+    settings = language_settings(default_language(), title; default)
+    return subquestion(id, settings; relevance, scale_id)
 end
 
 type(q::SubQuestion) = q.type

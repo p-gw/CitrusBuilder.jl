@@ -65,6 +65,12 @@ export dropdown_list_question
 export radio_list_question
 export multiple_choice_question
 
+export array_five_point_choice_question
+export array_ten_point_choice_question
+export array_yes_no_question
+export array_increase_decrease_question
+export array_question
+
 # xml
 export xml
 
