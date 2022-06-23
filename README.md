@@ -65,3 +65,8 @@ The resulting xml file can be imported on the server using the [LimeSurvey impor
 - `dropdown_list_question`
 - `radio_list_question`
 - `multiple_choice_question`
+- `array_five_point_choice_question`
+- `array_ten_point_choice_question`
+- `array_yes_no_question`
+- `array_increase_decrease_question`
+- `array_question`
