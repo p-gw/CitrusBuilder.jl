@@ -302,4 +302,54 @@
             @test length(q.subquestions) == 2
         end
     end
+
+    @testset "Mask questions" begin
+        @testset "date_select" begin
+            q = date_select("q1", "title")
+            @test id(q) == "q1"
+            @test title(q) == "title"
+            @test has_attributes(q) == false
+            @test q.attributes == Dict()
+
+            q = date_select("q2", "title", minimum=today())
+            @test has_attributes(q) == true
+            @test q.attributes == Dict("date_min" => today())
+
+            q = date_select("q3", language_settings("en", "title"), maximum="2022-01-01")
+            @test id(q) == "q3"
+            @test title(q) == "title"
+            @test has_attributes(q) == true
+            @test q.attributes == Dict("date_max" => "2022-01-01")
+        end
+
+        @testset "file_upload" begin
+            q = file_upload("q1", "upload")
+            @test id(q) == "q1"
+            @test title(q) == "upload"
+
+            q = file_upload("q2", language_settings("de", "Datei hochladen"))
+            @test id(q) == "q2"
+            @test title(q) == "Datei hochladen"
+            @test default_language(q) == "de"
+        end
+
+        @testset "gender_select" begin
+            q = gender_select("q1", "gender select")
+            @test id(q) == "q1"
+            @test title(q) == "gender select"
+
+            q = gender_select("q2", language_settings("en", "gender select"))
+            @test id(q) == "q2"
+            @test title(q) == "gender select"
+        end
+        @testset "language_switch" begin
+            q = language_switch("q1", "switch")
+            @test id(q) == "q1"
+            @test title(q) == "switch"
+
+            q = language_switch("q2", language_settings("en", "switch"))
+            @test id(q) == "q2"
+            @test title(q) == "switch"
+        end
+    end
 end
