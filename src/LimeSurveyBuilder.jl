@@ -20,9 +20,10 @@ export xml
 export type
 
 # global settings
-export set_default_language!, default_language
+export default_language
+export set_default_language!
 
-# abstractsurveycomponents
+# AbstractSurveyComponent
 export id
 export languages
 export title
@@ -55,6 +56,7 @@ export is_mandatory
 export has_other
 export has_subquestions
 export has_response_options
+export has_attributes
 
 export short_text_question
 export long_text_question
@@ -64,12 +66,21 @@ export five_point_choice_question
 export dropdown_list_question
 export radio_list_question
 export multiple_choice_question
-
 export array_five_point_choice_question
 export array_ten_point_choice_question
 export array_yes_no_question
 export array_increase_decrease_question
 export array_question
+export date_select
+export file_upload
+export gender_select
+export language_switch
+export numerical_input
+export multiple_numerical_input
+export ranking
+export text_display
+export yes_no_question
+export equation
 
 # xml
 export xml
@@ -83,6 +94,5 @@ include("question.jl")
 include("question_group.jl")
 include("survey.jl")
 include("xml.jl")
-
 
 end
