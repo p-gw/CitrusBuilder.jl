@@ -342,6 +342,7 @@
             @test id(q) == "q2"
             @test title(q) == "gender select"
         end
+
         @testset "language_switch" begin
             q = language_switch("q1", "switch")
             @test id(q) == "q1"
@@ -350,6 +351,110 @@
             q = language_switch("q2", language_settings("en", "switch"))
             @test id(q) == "q2"
             @test title(q) == "switch"
+        end
+
+        @testset "numerical_input" begin
+            q = numerical_input("q1", "numeric")
+            @test id(q) == "q1"
+            @test title(q) == "numeric"
+            @test has_attributes(q) == false
+
+            q = numerical_input("q2", language_settings("de", "numerisch"))
+            @test id(q) == "q2"
+            @test title(q) == "numerisch"
+            @test has_attributes(q) == false
+
+            q = numerical_input("q3", "int only", integer_only=true)
+            @test has_attributes(q) == true
+            @test q.attributes == Dict("num_value_int_only" => "1")
+
+            q = numerical_input("q4", "restricted range", minimum=0, maximum=10)
+            @test has_attributes(q) == true
+            @test length(q.attributes) == 2
+            @test q.attributes["min_num_value_n"] == 0
+            @test q.attributes["max_num_value_n"] == 10
+        end
+
+        @testset "multiple_numerical_input" begin
+            q = multiple_numerical_input("q1", "multiple numerical input", subquestions=[subquestion("sq1", "")])
+            @test id(q) == "q1"
+            @test title(q) == "multiple numerical input"
+            @test has_subquestions(q) == true
+            @test length(q.subquestions) == 1
+
+            q = multiple_numerical_input("q2", "") do
+                subquestion("", "")
+            end
+            @test id(q) == "q2"
+            @test title(q) == ""
+            @test has_subquestions(q) == true
+            @test length(q.subquestions) == 1
+
+            q = multiple_numerical_input("q3", language_settings("en", ""), subquestions=[subquestion("", "")])
+            @test id(q) == "q3"
+            @test title(q) == ""
+            @test default_language(q) == "en"
+            @test has_subquestions(q) == true
+            @test length(q.subquestions) == 1
+
+            q = multiple_numerical_input("q4", language_settings("en", "")) do
+                subquestion("", ""),
+                subquestion("", "")
+            end
+            @test id(q) == "q4"
+            @test title(q) == ""
+            @test default_language(q) == "en"
+            @test has_subquestions(q) == true
+            @test length(q.subquestions) == 2
+
+        end
+
+        @testset "ranking" begin
+            opts = response_scale([
+                response_option("o1", "option 1"),
+                response_option("o2", "option 2")
+            ])
+
+            q = ranking("q1", "ranking", opts)
+            @test id(q) == "q1"
+            @test title(q) == "ranking"
+            @test has_response_options(q) == true
+            @test length(q.options) == 1
+            @test length(first(q.options).options) == 2
+
+            q = ranking("q2", language_settings("en", "ranking"), opts)
+            @test id(q) == "q2"
+            @test title(q) == "ranking"
+            @test default_language(q) == "en"
+        end
+
+        @testset "text_display" begin
+            q = text_display("q1", "A simple text display")
+            @test id(q) == "q1"
+            @test title(q) == "A simple text display"
+
+            q = text_display("q2", language_settings("de", "Ein einfacher Text"))
+            @test id(q) == "q2"
+            @test title(q) == "Ein einfacher Text"
+            @test default_language(q) == "de"
+        end
+        @testset "yes_no_question" begin
+            q = yes_no_question("q1", "title")
+            @test id(q) == "q1"
+            @test title(q) == "title"
+
+            q = equation("q2", language_settings("en", "title"))
+            @test id(q) == "q2"
+            @test title(q) == "title"
+        end
+        @testset "equation" begin
+            q = equation("q1", "Some equation {q1}.")
+            @test id(q) == "q1"
+            @test title(q) == "Some equation {q1}."
+
+            q = equation("q2", language_settings("en", "equation"))
+            @test id(q) == "q2"
+            @test title(q) == "equation"
         end
     end
 end

@@ -377,10 +377,70 @@ function language_switch(id, title::String; help=nothing, kwargs...)
     return language_switch(id, settings; kwargs...)
 end
 
-function numerical_input(id, language_settings::LanguageSettings; kwargs...) end
+function numerical_input(id, language_settings::LanguageSettings; minimum=nothing, maximum=nothing, integer_only=false, kwargs...)
+    question = Question(; id, language_settings, type="N", kwargs...)
+    add_attribute!(question, "min_num_value_n" => minimum)
+    add_attribute!(question, "max_num_value_n" => maximum)
+    if integer_only
+        add_attribute!(question, "num_value_int_only" => "1")
+    end
+    return question
+end
 
-function multiple_numerical_input() end
-function ranking() end
-function text_display() end
-function yes_no_question() end
-function equation() end
+function numerical_input(id, title::String; help=nothing, kwargs...)
+    settings = language_settings(default_language(), title; help)
+    return numerical_input(id, settings; kwargs...)
+end
+
+function multiple_numerical_input(id, language_settings::LanguageSettings; subquestions, kwargs...)
+    return Question(; id, language_settings, subquestions=tovector(subquestions), type="K", kwargs...)
+end
+
+function multiple_numerical_input(id, title::String; subquestions, help=nothing, kwargs...)
+    settings = language_settings(default_language(), title; help)
+    return multiple_numerical_input(id, settings; subquestions, kwargs...)
+end
+
+function multiple_numerical_input(children::Function, id, language_settings::LanguageSettings; kwargs...)
+    return multiple_numerical_input(id, language_settings; subquestions=tovector(children()), kwargs...)
+end
+
+function multiple_numerical_input(children::Function, id, title::String; kwargs...)
+    return multiple_numerical_input(id, title; subquestions=tovector(children()), kwargs...)
+end
+
+function ranking(id, language_settings::LanguageSettings, options::ResponseScale; kwargs...)
+    return Question(; id, language_settings, type="R", options=tovector(options), kwargs...)
+end
+
+function ranking(id, title::String, options::ResponseScale; help=nothing, kwargs...)
+    settings = language_settings(default_language(), title; help)
+    return ranking(id, settings, options; kwargs...)
+end
+
+function text_display(id, language_settings::LanguageSettings; kwargs...)
+    return Question(; id, language_settings, type="X", kwargs...)
+end
+
+function text_display(id, title::String; help=nothing, kwargs...)
+    settings = language_settings(default_language(), title; help)
+    return text_display(id, settings; kwargs...)
+end
+
+function yes_no_question(id, language_settings::LanguageSettings; kwargs...)
+    return Question(; id, language_settings, type="Y", kwargs...)
+end
+
+function yes_no_question(id, title::String; help=nothing, kwargs...)
+    settings = language_settings(default_language(), title; help)
+    return yes_no_question(id, settings; kwargs...)
+end
+
+function equation(id, language_settings::LanguageSettings; kwargs...)
+    return Question(; id, language_settings, type="*", kwargs...)
+end
+
+function equation(id, title::String; help=nothing, kwargs...)
+    settings = language_settings(default_language(), title; help)
+    return equation(id, settings; kwargs...)
+end

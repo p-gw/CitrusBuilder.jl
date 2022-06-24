@@ -20,9 +20,10 @@ export xml
 export type
 
 # global settings
-export set_default_language!, default_language
+export default_language
+export set_default_language!
 
-# abstractsurveycomponents
+# AbstractSurveyComponent
 export id
 export languages
 export title
@@ -74,6 +75,12 @@ export date_select
 export file_upload
 export gender_select
 export language_switch
+export numerical_input
+export multiple_numerical_input
+export ranking
+export text_display
+export yes_no_question
+export equation
 
 # xml
 export xml
@@ -87,6 +94,5 @@ include("question.jl")
 include("question_group.jl")
 include("survey.jl")
 include("xml.jl")
-
 
 end
