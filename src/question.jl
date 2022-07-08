@@ -3,11 +3,14 @@
 
 # Fields
 - `id::String`: An alphanumeric question id. Must start with a letter.
-- `question::String`: The question title
-- `help::String`: Help text provided to users
+- `type::String`: The LimeSurvey question type
 - `mandatory::Bool`: Determines if the question is mandatory
 - `other::Bool`: Determines if the questions as *other* category
 - `relevance::String`: A LimeSurvey Expression Script
+- `attributes::Dict`: Additional question attributes
+- `language_settings::LanguageSettings`: Language Settings for the question
+- `subquestions::Vector{Subquestion}`: A vector of subquestions
+- `options::Vector{ResponseScale}`: A vector of response scales.
 """
 @kwdef struct Question <: AbstractQuestion
     id::String
@@ -47,7 +50,29 @@ function add_attribute!(question::Question, attribute::Pair{String,T}) where {T}
     return nothing
 end
 
-# text questions
+"""
+    short_text_question(id, language_settings::LanguageSettings; kwargs...)
+    short_text_question(id, title::String; help=nothing, default=nothing, kwargs...)
+
+Construct a short text question.
+If the question is constructed using a `title`, the global default language is used by default.
+
+For a list of available keyword arguments see [`Question`](@ref).
+
+# Examples
+Simple short text questions using a single language can be constructed using a `title` string.
+```julia-repl
+julia> q = short_text_question("q1", "my question")
+```
+
+To construct a multi-language short text question, use [`language_settings`](@ref).
+```julia-repl
+julia> q = short_text_question("q2", language_settings([
+    language_setting("en", "question title"),
+    language_setting("de", "Fragetitel")
+]))
+```
+"""
 function short_text_question(id, language_settings::LanguageSettings; kwargs...)
     return Question(;
         id,
@@ -62,6 +87,17 @@ function short_text_question(id, title::String; help=nothing, default=nothing, k
     return short_text_question(id, settings; kwargs...)
 end
 
+"""
+    long_text_question(id, language_settings::LanguageSettings; kwargs...)
+    long_text_question(id, title::String; help=nothing, default=nothing, kwargs...)
+
+Construct a long text question.
+If the question is constructed using a `title`, the global default language is used by default.
+
+# Examples
+
+
+"""
 function long_text_question(id, language_settings::LanguageSettings; kwargs...)
     return Question(;
         id,

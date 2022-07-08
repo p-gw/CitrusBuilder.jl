@@ -9,6 +9,6 @@ Documentation for [LimeSurveyBuilder](https://github.com/p-gw/LimeSurveyBuilder.
 ```@index
 ```
 
-```@autodocs
+<!-- ```@autodocs
 Modules = [LimeSurveyBuilder]
-```
+``` -->
