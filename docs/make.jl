@@ -15,6 +15,7 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "Getting Started" => "getting_started.md",
         "Survey Components" => [
             "Survey" => "survey.md",
             # "Question Group" => "",
@@ -26,6 +27,10 @@ makedocs(;
             "Construct multi-language surveys" => "tutorials/multi_language.md",
             "Construct surveys programmatically" => "tutorials/from_data.md",
             "Creating custom question types" => "tutorials/custom_question_types.md"
+        ],
+        "API" => [
+            "Types" => "lib/types.md",
+            "Functions" => "lib/functions.md"
         ]
     ]
 )

@@ -1,5 +1,5 @@
 """
-    Survey
+    Survey <: AbstractSurveyComponent
 
 A type to represent a LimeSurvey.
 

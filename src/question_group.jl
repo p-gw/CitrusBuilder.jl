@@ -1,3 +1,13 @@
+"""
+    QuestionGroup <: AbstractSurveyComponent
+
+A type representing a question group within a LimeSurvey
+
+# Fields
+- `id::Int`: An integer-valued ID for the question group
+- `language_settings::LanguageSettings`: The language settings for the question group
+- `children::Vector{Question}`: A vector of questions as child elements of the question group
+"""
 struct QuestionGroup <: AbstractSurveyComponent
     id::Int
     language_settings::LanguageSettings

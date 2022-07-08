@@ -1,3 +1,8 @@
+"""
+    AbstractSurveyComponent
+
+An abstract type that represents a component within a LimeSurvey survey.
+"""
 abstract type AbstractSurveyComponent end
 
 """
@@ -340,6 +345,12 @@ function Base.insert!(component::AbstractSurveyComponent, index::Integer, item)
     return item
 end
 
+"""
+    AbstractQuestion <: AbstractSurveyComponent
+
+An abstract type representing a question within a LimeSurvey.
+
+"""
 abstract type AbstractQuestion <: AbstractSurveyComponent end
 
 type(q::AbstractQuestion) = q.type

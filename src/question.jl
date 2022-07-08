@@ -1,6 +1,8 @@
 """
     Question
 
+A survey component that stores information about LimeSurvey questions.
+
 # Fields
 - `id::String`: An alphanumeric question id. Must start with a letter.
 - `type::String`: The LimeSurvey question type

@@ -32,6 +32,12 @@ end
     xml(survey::Survey)
 
 Construct an XML document from a `Survey` object.
+
+# Examples
+```julia-repl
+julia> s = survey(100000, "my survey")
+julia> xml(s)
+```
 """
 function xml(survey::Survey)
     doc = create_document!()
@@ -250,6 +256,18 @@ function add_language_settings!(root::EzXML.Node, survey::Survey)
     return settings_node
 end
 
+"""
+    write(filename::AbstractString, survey::Survey)
+
+Write the XML structure of `survey` to a file.
+Make sure that the `filename` extension is `.lss` for the import in LimeSurvey.
+
+# Examples
+```julia-repl
+julia> s = survey(100000, "my survey")
+julia> write("mysurvey.lss", s)
+```
+"""
 function write(filename::AbstractString, survey::Survey)
     file_name = last(splitpath(filename))
     last(splitext(filename)) == ".lss" || @warn "File '$file_name' does not have .lss extension."

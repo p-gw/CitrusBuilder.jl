@@ -1,6 +1,8 @@
 """
     SubQuestion
 
+A type representing subquestions of a LimeSurvey question.
+
 # Fields
 - `id::String`: An alphanumeric question id. Must start with a letter.
 - `question::String`: The subquestion title.

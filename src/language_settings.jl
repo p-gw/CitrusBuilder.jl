@@ -32,6 +32,18 @@ function set_default_language!(lang::String)
     return nothing
 end
 
+"""
+    LanguageSetting
+
+A type representing the settings of a survey component for a single language.
+
+# Fields
+- `language::String`: The definition of the locale
+- `title::title`: The title of the survey component in the language
+- `help::Union{Nothing, String}`: The help text of the survey component in the language
+- `description::Union{Nothing, String}`: The description of the survey component in the language
+- `default::Union{Nothing, String}`: The default value of the survey component in the language
+"""
 struct LanguageSetting
     language::String
     title::String
@@ -40,6 +52,15 @@ struct LanguageSetting
     default::Union{Nothing,String}
 end
 
+"""
+    LanguageSettings
+
+A type representing a collection of single [`LanguageSetting`](@ref).
+
+# Fields
+- `settings::Vector{LanguageSetting}`: A collection of language settings.
+- `same_default::Bool`: An indicator whether or not the same default value is used for all languages.
+"""
 struct LanguageSettings
     settings::Vector{LanguageSetting}
     same_default::Bool
