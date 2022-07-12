@@ -1,6 +1,6 @@
 # Getting Started
-Welcome to the `LimeSurveyBuilder.jl` getting started section. 
-LimeSurveyBuilder is a Julia package that allows you to construct LimeSurveys within Julia export their XML structure.
+Welcome to the LimeSurveyBuilder.jl getting started section! 
+LimeSurveyBuilder.jl is a Julia package that allows you to construct LimeSurveys within Julia export their XML structure.
 The exported `.lss` files can then be imported into a running LimeSurvey instance.
 
 Surveys can be imported by using
@@ -11,18 +11,23 @@ Surveys can be imported by using
 If you are interested in calling the LimeSurvey API from Julia, you can take a look at [LimeSurveyAPI.jl](https://github.com/p-gw/LimeSurveyAPI.jl).
 
 ## Installation
-At the current stage of development `LimeSurveyBuilder.jl` is not registered in the Julia General repository. 
+At the current stage of development LimeSurveyBuilder.jl is not registered in the Julia General repository. 
 In order to install the package you have to install it from GitHub.
 
-To install, open a Julia REPL and execute the following commands, that will install `LimeSurveyBuilder.jl` from the `main` branch of the GitHub repository.
+To install the package open a Julia REPL and execute the following commands, that will install LimeSurveyBuilder.jl from the `main` branch of the GitHub repository.
 
 ```julia
 using Pkg
 Pkg.add(url="https://github.com/p-gw/LimeSurveyBuilder.jl", rev="main")
 ```
 
+!!! note
+    Please note that LimeSurveyBuilder.jl is currently under active development. 
+    Therefore the provided API is subject to change. 
+    Keep this in mind if you wish to use LimeSurveyBuilder.jl in your project.
+
 ## Now what?
-Now that you have installed `LimeSurveyBuilder.jl` you can start building your surveys!
+Now that you have installed LimeSurveyBuilder.jl you can start building your surveys!
 
 Just call 
 

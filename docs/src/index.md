@@ -23,7 +23,3 @@ While not recommended for first-time users you can also skip the tutorials entir
 ## Index
 ```@index
 ```
-
-<!-- ```@autodocs
-Modules = [LimeSurveyBuilder]
-``` -->

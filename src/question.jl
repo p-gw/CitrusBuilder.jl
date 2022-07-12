@@ -91,14 +91,10 @@ end
 
 """
     long_text_question(id, language_settings::LanguageSettings; kwargs...)
-    long_text_question(id, title::String; help=nothing, default=nothing, kwargs...)
 
-Construct a long text question.
-If the question is constructed using a `title`, the global default language is used by default.
+Construct a multi-language long text question.
 
-# Examples
-
-
+For a list of available keyword arguments see [`Question`](@ref).
 """
 function long_text_question(id, language_settings::LanguageSettings; kwargs...)
     return Question(;
@@ -109,11 +105,25 @@ function long_text_question(id, language_settings::LanguageSettings; kwargs...)
     )
 end
 
+"""
+    long_text_question(id, title::String; help, default, kwargs...)
+
+Construct a single-language long text question.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function long_text_question(id, title::String; help=nothing, default=nothing, kwargs...)
     settings = language_settings(default_language(), title; help, default)
     return long_text_question(id, settings; kwargs...)
 end
 
+"""
+    huge_text_question(id, language_settings::LanguageSettings; kwargs...)
+
+Construct a multi-language long text question.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function huge_text_question(id, language_settings::LanguageSettings; kwargs...)
     return Question(;
         id,
@@ -123,11 +133,25 @@ function huge_text_question(id, language_settings::LanguageSettings; kwargs...)
     )
 end
 
+"""
+    huge_text_question(id, title::String; help, default, kwargs...)
+
+Construct a single-language long text question.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function huge_text_question(id, title::String; help=nothing, default=nothing, kwargs...)
     settings = language_settings(default_language(), title; help, default)
     return huge_text_question(id, settings; kwargs...)
 end
 
+"""
+    multiple_short_text_question(id, language_settings::LanguageSettings; subquestions, kwargs...)
+
+Construct a multi-language multiple short text question.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function multiple_short_text_question(id, language_settings::LanguageSettings; subquestions, kwargs...)
     return Question(;
         id,
@@ -138,15 +162,36 @@ function multiple_short_text_question(id, language_settings::LanguageSettings; s
     )
 end
 
+"""
+    multiple_short_text_question(id, title::String; subquestions, help, kwargs...)
+
+Construct a single-language multiple short text question.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function multiple_short_text_question(id, title::String; subquestions, help=nothing, kwargs...)
     settings = language_settings(default_language(), title; help)
     return multiple_short_text_question(id, settings; subquestions, kwargs...)
 end
 
+"""
+    multiple_short_text_question(children::Function, id, language_settings::LanguageSettings; kwargs...)
+
+Construct a multi-language multiple short text question using `do...end` syntax.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function multiple_short_text_question(children::Function, id, language_settings::LanguageSettings; kwargs...)
     return multiple_short_text_question(id, language_settings; subquestions=tovector(children()), kwargs...)
 end
 
+"""
+    multiple_short_text_question(children::Function, id, title::String; help, kwargs...)
+
+Construct a single-language multiple short text question using `do...end` syntax.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function multiple_short_text_question(children::Function, id, title::String; help=nothing, kwargs...)
     settings = language_settings(default_language(), title; help)
     return multiple_short_text_question(id, settings; subquestions=tovector(children()), kwargs...)
