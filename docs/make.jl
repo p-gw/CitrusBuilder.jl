@@ -16,13 +16,7 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
-        # "Survey Components" => [
-        #     "Survey" => "survey.md",
-        #     # "Question Group" => "",
-        #     "Question" => "question_types.md"
-        # ],
         "Tutorials" => [
-            # "Overview" => "tutorials/index.md",
             "Construct basic surveys" => "tutorials/basic.md",
             "Construct multi-language surveys" => "tutorials/multi_language.md",
             "Construct surveys programmatically" => "tutorials/from_data.md",
@@ -35,7 +29,7 @@ makedocs(;
     ]
 )
 
-# deploydocs(;
-#     repo="github.com/p-gw/LimeSurveyBuilder.jl",
-#     devbranch="main"
-# )
+deploydocs(;
+    repo="github.com/p-gw/LimeSurveyBuilder.jl",
+    devbranch="main"
+)
