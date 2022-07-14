@@ -70,6 +70,17 @@ equation
 subquestion
 ```
 
+## Accessors
+### Question
+```@docs
+is_mandatory
+has_other
+has_subquestions
+has_response_options
+has_attributes
+attributes
+```
+
 ## IO
 ```@docs
 write

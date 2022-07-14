@@ -57,6 +57,7 @@ export has_other
 export has_subquestions
 export has_response_options
 export has_attributes
+export attributes
 
 export short_text_question
 export long_text_question

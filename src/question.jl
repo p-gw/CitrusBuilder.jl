@@ -30,11 +30,111 @@ A survey component that stores information about LimeSurvey questions.
     end
 end
 
+"""
+    is_mandatory(question::Question)
+
+Check if a [`Question`](@ref) is mandatory.
+
+# Examples
+```julia-repl
+julia> q = short_text_question("q1", "A question")
+julia> is_mandatory(q)
+false
+```
+
+```julia-repl
+julia> q = short_text_question("q1", "A mandatory question", mandatory=true)
+julia> is_mandatory(q)
+true
+```
+"""
 is_mandatory(question::Question) = question.mandatory
+
+"""
+    has_other(question::Question)
+
+Check if a [`Question`](@ref) has response option *'other'*.
+"""
 has_other(question::Question) = question.other
+
+"""
+    has_subquestions(question::Question)
+
+Check if a [`Question`](@ref) has any subquestions.
+
+# Examples
+```julia-repl
+julia> q = short_text_question("q1", "A question")
+julia> has_subquestions(q)
+false
+```
+
+```julia-repl
+julia> q = multiple_short_text_question("q1", "Multiple questions") do
+    subquestion("sq1", "subquestion 1"),
+    subquestion("sq2", "subquestion 2")
+end
+julia> has_subquestions(q)
+true
+```
+"""
 has_subquestions(question::Question) = length(question.subquestions) > 0
+
+"""
+    has_response_options(questions::Question)
+
+Check if a [`Question`](@ref) has any response options.
+
+# Examples
+```julia-repl
+julia> q = five_point_choice_question("q1", "A question")
+julia> has_response_options(q)
+false
+```
+
+```julia-repl
+julia> options = response_scale([response_option("o1", "option 1")])
+julia> q = dropdown_list_question("q1", "A dropdown question", options)
+julia> has_response_options(q)
+true
+```
+"""
 has_response_options(question::Question) = length(question.options) > 0
+
+"""
+    has_attributes(question::Question)
+
+Check if a [`Question`](@ref) has any attributes.
+
+# Examples
+```julia-repl
+julia> q = numerical_input("q1", "An input")
+julia> has_attributes(q)
+false
+```
+
+```julia-repl
+julia> q = numerical_input("q1", "An input with attributes", minimum=0, maximum=10)
+julia> has_attributes(q)
+true
+```
+"""
 has_attributes(question::Question) = length(question.attributes) > 0
+
+"""
+    attributes(question::Question)
+
+Get the attributes of a [`Question`](@ref).
+
+# Examples
+```julia-repl
+julia> q = numerical_input("q1", "A numerical input", minimum=0, maximum=10)
+julia> attributes(q)
+Dict{String, Any} with 2 entries:
+  "min_num_value_n" => 0
+  "max_num_value_n" => 10
+```
+"""
 attributes(question::Question) = question.attributes
 
 function add_attribute!(question::Question, attribute::Pair{String,T}) where {T}
