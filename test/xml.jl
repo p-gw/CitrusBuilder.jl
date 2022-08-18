@@ -292,6 +292,37 @@
 
     @testset "add_question!" begin end
 
+    @testset "add_question_attribute!" begin
+        attribute = LimeSurveyBuilder.QuestionAttribute("key", nothing, "value")
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+        iterator = LimeSurveyBuilder.SurveyIterator(0)
+
+        LimeSurveyBuilder.add_question_attribute!(docroot, attribute, iterator)
+        @test countnodes(docroot) == 1
+
+        attributes_node = first(nodes(docroot))
+        @test nodename(attributes_node) == "question_attributes"
+        @test countnodes(attributes_node) == 1
+
+        rows_node = first(nodes(attributes_node))
+        row_node = first(nodes(rows_node))
+        row_data = nodes(row_node)
+
+        @test nodename.(row_data) == ["qid", "attribute", "value"]
+        @test nodecontent.(row_data) == ["0", "key", "value"]
+
+        attribute = LimeSurveyBuilder.QuestionAttribute("a2", "de", "v2")
+        LimeSurveyBuilder.add_question_attribute!(docroot, attribute, iterator)
+        @test countnodes(rows_node) == 2
+
+        row_node = nodes(rows_node)[2]
+        row_data = nodes(row_node)
+
+        @test nodename.(row_data) == ["qid", "attribute", "value", "language"]
+        @test nodecontent.(row_data) == ["0", "a2", "v2", "de"]
+    end
+
     @testset "add_subquestion!" begin
         sq = subquestion("sq", "subquestion")
         doc = LimeSurveyBuilder.create_document!()

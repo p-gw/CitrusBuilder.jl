@@ -25,5 +25,30 @@
 
         @test length(scale.options) == length(options)
         @test title(scale) == "some title"
+
+        # multi language
+        scale = response_scale(collect(options), language_settings([
+            language_setting("de", "Titel"),
+            language_setting("en", "title")
+        ]))
+
+        @test length(scale.options) == length(options)
+        @test default_language(scale) == "de"
+        @test languages(scale) == ["de", "en"]
+        @test title(scale) == title(scale, "de") == "Titel"
+        @test title(scale, "en") == "title"
+
+        scale = response_scale(language_settings([
+            language_setting("de", "Titel"),
+            language_setting("en", "title")
+        ])) do
+            options
+        end
+
+        @test length(scale.options) == length(options)
+        @test default_language(scale) == "de"
+        @test languages(scale) == ["de", "en"]
+        @test title(scale) == title(scale, "de") == "Titel"
+        @test title(scale, "en") == "title"
     end
 end
