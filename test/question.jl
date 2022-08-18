@@ -309,17 +309,19 @@
             @test id(q) == "q1"
             @test title(q) == "title"
             @test has_attributes(q) == false
-            @test q.attributes == Dict()
+            @test q.attributes isa Vector{LimeSurveyBuilder.QuestionAttribute}
 
             q = date_select("q2", "title", minimum=today())
             @test has_attributes(q) == true
-            @test q.attributes == Dict("date_min" => today())
+            @test length(q.attributes) == 1
+            @test first(q.attributes) == LimeSurveyBuilder.QuestionAttribute("date_min", nothing, today())
 
             q = date_select("q3", language_settings("en", "title"), maximum="2022-01-01")
             @test id(q) == "q3"
             @test title(q) == "title"
             @test has_attributes(q) == true
-            @test q.attributes == Dict("date_max" => "2022-01-01")
+            @test length(q.attributes) == 1
+            @test first(q.attributes) == LimeSurveyBuilder.QuestionAttribute("date_max", nothing, "2022-01-01")
         end
 
         @testset "file_upload" begin
@@ -366,13 +368,13 @@
 
             q = numerical_input("q3", "int only", integer_only=true)
             @test has_attributes(q) == true
-            @test q.attributes == Dict("num_value_int_only" => "1")
+            @test first(q.attributes) == LimeSurveyBuilder.QuestionAttribute("num_value_int_only", nothing, "1")
 
             q = numerical_input("q4", "restricted range", minimum=0, maximum=10)
             @test has_attributes(q) == true
             @test length(q.attributes) == 2
-            @test q.attributes["min_num_value_n"] == 0
-            @test q.attributes["max_num_value_n"] == 10
+            @test first(q.attributes).value == 0
+            @test last(q.attributes).value == 10
         end
 
         @testset "multiple_numerical_input" begin

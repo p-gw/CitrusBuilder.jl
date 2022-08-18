@@ -8,17 +8,22 @@
     end
 
     @testset "response scales" begin
-        n = 5
+        options = (response_option("a$i", "option $i") for i in 1:5)
 
-        scale = response_scale() do
-            (response_option("a$i", "option $i") for i in 1:n)
-        end
-
-        @test length(scale.options) == n
+        scale = response_scale(collect(options))
+        @test length(scale.options) == length(options)
+        @test title(scale) == ""
 
         for i in eachindex(scale.options)
             @test id(scale.options[i]) == "a$i"
             @test title(scale.options[i]) == "option $i"
         end
+
+        scale = response_scale("some title") do
+            options
+        end
+
+        @test length(scale.options) == length(options)
+        @test title(scale) == "some title"
     end
 end
