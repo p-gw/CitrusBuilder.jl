@@ -76,11 +76,14 @@ SurveyIterator(survey_id) = SurveyIterator(survey_id, 0, 0, 0, 0, 0, 0)
 
 function add_survey!(root::EzXML.Node, survey::Survey)
     surveys_node = add_unique_node!(root, "surveys")
+    survey_node = add_row_node!(surveys_node)
 
-    for language in languages(survey)
-        survey_node = add_row_node!(surveys_node)
-        add_cdata_node!(survey_node, "sid", survey.id)
-        add_cdata_node!(survey_node, "language", language)
+    add_cdata_node!(survey_node, "sid", survey.id)
+    add_cdata_node!(survey_node, "language", default_language(survey))
+
+    additional_languages = languages(survey)[2:end]
+    if length(additional_languages) > 0
+        add_cdata_node!(survey_node, "additional_languages", join(additional_languages, " "))
     end
 
     iterator = SurveyIterator(survey.id)

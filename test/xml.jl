@@ -181,17 +181,29 @@
 
         rows_node = first(nodes(surveys_node))
         @test nodename(rows_node) == "rows"
-        @test countnodes(rows_node) == 2
+        @test countnodes(rows_node) == 1
 
-        for (i, row) in enumerate(nodes(rows_node))
-            language = i == 1 ? "en" : "de"
-            settings = nodes(row)
-            @test nodename(settings[1]) == "sid"
-            @test nodecontent(settings[1]) == "100001"
+        row_node = first(nodes(rows_node))
+        survey_data = nodes(row_node)
+        @test nodename.(survey_data) == ["sid", "language", "additional_languages"]
+        @test nodecontent.(survey_data) == ["100001", "en", "de"]
 
-            @test nodename(settings[2]) == "language"
-            @test nodecontent(settings[2]) == language
-        end
+        s = survey(100001, language_settings([
+            language_setting("en", "title"),
+            language_setting("de", "Titel"),
+            language_setting("es", "titulo")
+        ]))
+
+        doc = LimeSurveyBuilder.create_document!()
+        docroot = root(doc)
+        LimeSurveyBuilder.add_survey!(docroot, s)
+        surveys_node = first(nodes(docroot))
+        rows_node = first(nodes(surveys_node))
+        row_node = first(nodes(rows_node))
+        survey_data = nodes(row_node)
+
+        @test nodename.(survey_data) == ["sid", "language", "additional_languages"]
+        @test nodecontent.(survey_data) == ["100001", "en", "de es"]
 
         # with question groups
         n_groups = 4
@@ -202,7 +214,6 @@
         doc = LimeSurveyBuilder.create_document!()
         docroot = root(doc)
         LimeSurveyBuilder.add_survey!(docroot, s)
-
 
         @test nodename.(nodes(docroot)) == ["surveys", "groups"]
         surveys_node, groups_node = nodes(docroot)
