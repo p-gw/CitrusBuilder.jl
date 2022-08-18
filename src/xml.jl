@@ -148,6 +148,10 @@ function add_question!(root::EzXML.Node, question::Question, iterator::SurveyIte
         add_default_value!(root, question, iterator)
     end
 
+    for attribute in attributes(question)
+        add_question_attribute!(root, attribute, iterator)
+    end
+
     for (subquestion_order, subquestion) in enumerate(question.subquestions)
         iterator.counter += 1
         iterator.order = subquestion_order
@@ -159,6 +163,21 @@ function add_question!(root::EzXML.Node, question::Question, iterator::SurveyIte
         # LimeSurveys scale_id starts at 0
         iterator.scale_id = scale_id - 1
         add_response_scale!(root, scale, iterator)
+    end
+
+    return nothing
+end
+
+function add_question_attribute!(root::EzXML.Node, attribute::QuestionAttribute, iterator::SurveyIterator)
+    attributes_node = add_unique_node!(root, "question_attributes")
+
+    attribute_node = add_row_node!(attributes_node)
+    add_cdata_node!(attribute_node, "qid", iterator.question_id)
+    add_cdata_node!(attribute_node, "attribute", attribute.attribute)
+    add_cdata_node!(attribute_node, "value", attribute.value)
+
+    if !isnothing(attribute.language)
+        add_cdata_node!(attribute_node, "language", attribute.language)
     end
 
     return nothing

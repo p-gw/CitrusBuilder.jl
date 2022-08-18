@@ -1,3 +1,9 @@
+struct QuestionAttribute
+    attribute::String
+    language::Union{Nothing,String}
+    value
+end
+
 """
     Question
 
@@ -15,7 +21,7 @@
     mandatory::Bool = false
     other::Bool = false
     relevance::String = "1"
-    attributes::Dict{String,Any} = Dict{String,Any}()
+    attributes::Vector{QuestionAttribute} = QuestionAttribute[]
     language_settings::LanguageSettings
     subquestions::Vector{SubQuestion} = SubQuestion[]
     options::Vector{ResponseScale} = ResponseScale[]
@@ -32,19 +38,20 @@ has_response_options(question::Question) = length(question.options) > 0
 has_attributes(question::Question) = length(question.attributes) > 0
 attributes(question::Question) = question.attributes
 
-function add_attribute!(question::Question, attribute::Pair{String,T}) where {T}
-    key, value = collect(attribute)
+function add_attribute!(question::Question, attribute::QuestionAttribute)
+    push!(question.attributes, attribute)
+    return nothing
+end
+
+function add_attribute!(question::Question, kv::Pair{String,T}) where {T}
+    key, value = collect(kv)
 
     if isnothing(value)
         return nothing
     end
 
-    if key in keys(attributes(question))
-        error("Question attribute '$(key)' already exists")
-    end
-
-    push!(question.attributes, attribute)
-    return nothing
+    attribute = QuestionAttribute(key, nothing, value)
+    add_attribute!(question, attribute)
 end
 
 # text questions
@@ -307,7 +314,7 @@ function array_question(id, language_settings::LanguageSettings, options::Vector
         error("Single scale array questions must have 1 response scale")
     end
 
-    return Question(;
+    question = Question(;
         id,
         language_settings,
         type=question_type,
@@ -315,6 +322,19 @@ function array_question(id, language_settings::LanguageSettings, options::Vector
         options=options_vec,
         kwargs...
     )
+
+    # scale headers are only defined for dual-scale array questions
+    if type == "dual"
+        for (i, scale) in enumerate(options_vec)
+            for lang in languages(scale)
+                attribute_name = "dualscale_header" * ["A", "B"][i]
+                attribute = QuestionAttribute(attribute_name, lang, title(scale, lang))
+                add_attribute!(question, attribute)
+            end
+        end
+    end
+
+    return question
 end
 
 function array_question(id, title::String, options::VectorOrElement{ResponseScale}; help=nothing, kwargs...)
