@@ -10,6 +10,12 @@ Pages = ["functions.md"]
 ```
 
 ## Constructors
+```@docs
+Base.append!
+Base.insert!
+Base.prepend!
+```
+
 ### Survey
 ```@docs
 survey
@@ -68,6 +74,12 @@ equation
 ### SubQuestion
 ```@docs
 subquestion
+```
+
+### LanguageSettings
+```@docs
+language_settings
+language_setting
 ```
 
 ## Accessors

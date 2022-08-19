@@ -1,5 +1,5 @@
 """
-    SubQuestion
+    SubQuestion <: AbstractQuestion
 
 A type representing subquestions of a LimeSurvey question.
 
@@ -15,7 +15,6 @@ struct SubQuestion <: AbstractQuestion
     relevance::String
     language_settings::LanguageSettings
     scale_id::Int
-    # TODO: validate id
 end
 
 """

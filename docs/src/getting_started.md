@@ -60,7 +60,7 @@ This should give you the basic toolset to create your own surveys as fast as pos
 
 Once you are familiar with the basic syntax, you can continue depending on how you want to use this package. Either, 
 
-- Expand the basic survey structure by adding other [question types](question_types.md) to your survey,
+- Expand the basic survey structure by adding other [question types](lib/functions.md#Question) to your survey,
 - Learn how to create [multi-language surveys](tutorials/multi_language.md),
 - Learn how to [dynamically generate surveys from data](tutorials/from_data.md), or 
 - Learn how to create [custom question types](tutorials/custom_question_types.md).

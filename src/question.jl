@@ -1,5 +1,5 @@
 """
-    Question
+    Question <: AbstractQuestion
 
 A survey component that stores information about LimeSurvey questions.
 
@@ -612,23 +612,54 @@ function file_upload(id, title::String; help=nothing, kwargs...)
     return file_upload(id, settings; kwargs...)
 end
 
+"""
+    gender_select(id, language_settings::LanguageSettings; kwargs...)
+
+Construct a multi-language gender select.
+"""
 function gender_select(id, language_settings::LanguageSettings; kwargs...)
     return Question(; id, language_settings, type="G", kwargs...)
 end
 
+"""
+    gender_select(id, title::String; help=nothing, kwargs...)
+
+Construct a single-language gender select.
+"""
 function gender_select(id, title::String; help=nothing, kwargs...)
     settings = language_settings(default_language(), title; help)
     return gender_select(id, settings; kwargs...)
 end
 
+"""
+    language_switch(id, language_settings::LanguageSettings; kwargs...)
+
+Construct a multi-language language switch.
+"""
 function language_switch(id, language_settings::LanguageSettings; kwargs...)
     return Question(; id, type="I", language_settings, kwargs...)
 end
 
+"""
+    language_switch(id, title::String; help=nothing, kwargs...)
+
+Construct a single-language language switch.
+"""
 function language_switch(id, title::String; help=nothing, kwargs...)
     settings = language_settings(default_language(), title; help)
     return language_switch(id, settings; kwargs...)
 end
+
+"""
+    numerical_input(id, language_settings::LanguageSettings; minimum=nothing, maximum=nothing, integer_only=false, kwargs...)
+
+Construct a multi-language numerical input.
+
+# Keyword arguments
+- `minimum`: The minimum value
+- `maximum`: The maximum value
+- `integer_only`: Indicates if only integer values are permitted
+"""
 
 function numerical_input(id, language_settings::LanguageSettings; minimum=nothing, maximum=nothing, integer_only=false, kwargs...)
     question = Question(; id, language_settings, type="N", kwargs...)
@@ -640,6 +671,11 @@ function numerical_input(id, language_settings::LanguageSettings; minimum=nothin
     return question
 end
 
+"""
+    numerical_input(id, title::String; help=nothing, kwargs...)
+
+Construct a single-language numerical input.
+"""
 function numerical_input(id, title::String; help=nothing, kwargs...)
     settings = language_settings(default_language(), title; help)
     return numerical_input(id, settings; kwargs...)
