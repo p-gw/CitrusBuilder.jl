@@ -298,6 +298,13 @@ function multiple_short_text_question(children::Function, id, title::String; hel
 end
 
 # single choice questions
+"""
+    five_point_choice_question(id, language_settings::LanguageSettings; kwargs...)
+
+Construct a multi-language five point choice question.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function five_point_choice_question(id, language_settings::LanguageSettings; kwargs...)
     return Question(;
         id,
@@ -307,11 +314,25 @@ function five_point_choice_question(id, language_settings::LanguageSettings; kwa
     )
 end
 
+"""
+    five_point_choice_question(id, title::String; help=nothing, kwargs...)
+
+Construct a single-language five point choice question.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function five_point_choice_question(id, title::String; help=nothing, kwargs...)
     settings = language_settings(default_language(), title; help)
     return five_point_choice_question(id, settings; kwargs...)
 end
 
+"""
+    dropdown_list_question(id, language_settings::LanguageSettings, options::ResponseScale; kwargs...)
+
+Construct a multi-language dropdown list question.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function dropdown_list_question(id, language_settings::LanguageSettings, options::ResponseScale; kwargs...)
     return Question(;
         id,
@@ -322,11 +343,25 @@ function dropdown_list_question(id, language_settings::LanguageSettings, options
     )
 end
 
+"""
+    dropdown_list_question(id, title::String, optins::ResponseScale; help=nothing, kwargs...)
+
+Construct a single-language dropdown list question.
+
+For a list of available keyword arguments see [`Question`](@ref).
+"""
 function dropdown_list_question(id, title::String, options::ResponseScale; help=nothing, kwargs...)
     settings = language_settings(default_language(), title; help)
     return dropdown_list_question(id, settings, options; kwargs...)
 end
 
+"""
+    radio_list_question(id, language_settings::LanguageSettings, options::ResponseScale; comment=false, kwargs...)
+
+Construct a multi-language radio list question.
+
+For a list of additional keyword arguments see [`Question`](@ref).
+"""
 function radio_list_question(id, language_settings::LanguageSettings, options::ResponseScale; comment=false, kwargs...)
     return Question(;
         id,
@@ -337,12 +372,26 @@ function radio_list_question(id, language_settings::LanguageSettings, options::R
     )
 end
 
+"""
+    radio_list_question(id, title::String, options::ResponseScale; help=nothing, kwargs...)
+
+Construct a single-language radio list question.
+
+For a list of additional keyword arguments see [`Question`](@ref).
+"""
 function radio_list_question(id, title::String, options::ResponseScale; help=nothing, kwargs...)
     settings = language_settings(default_language(), title; help)
     return radio_list_question(id, settings, options; kwargs...)
 end
 
 # multiple choice questions
+"""
+    multiple_choice_question(id, language_settings::LanguageSettings; subquestions, comments=false, kwargs...)
+
+Construct a multi-language multiple choice question.
+
+For a list of additional keyword arguments see [`Question`](@ref).
+"""
 function multiple_choice_question(id, language_settings::LanguageSettings; subquestions, comments=false, kwargs...)
     return Question(;
         id,
@@ -353,15 +402,36 @@ function multiple_choice_question(id, language_settings::LanguageSettings; subqu
     )
 end
 
+"""
+    multiple_choice_question(id, title::String; subquestions, help=nothing, kwargs...)
+
+Construct a single-language multiple choice question.
+
+For a list of additional keyword arguments see [`Question`](@ref).
+"""
 function multiple_choice_question(id, title::String; subquestions, help=nothing, kwargs...)
     settings = language_settings(default_language(), title; help)
     return multiple_choice_question(id, settings; subquestions, kwargs...)
 end
 
+"""
+    multiple_choice_question(children::Function, id, language_settings::LanguageSettings; kwargs...)
+
+Construct a multi-language multiple choice question using `do...end` syntax.
+
+For a list of additional keyword arguments see [`Question`](@ref).
+"""
 function multiple_choice_question(children::Function, id, language_settings::LanguageSettings; kwargs...)
     return multiple_choice_question(id, language_settings; subquestions=tovector(children()), kwargs...)
 end
 
+"""
+    multiple_choice_question(children::Function, id, title::String; kwargs...)
+
+Construct a single-language multiple choice question using `do...end` syntax.
+
+For a list of additional keyword arguments see [`Question`](@ref).
+"""
 function multiple_choice_question(children::Function, id, title::String; kwargs...)
     return multiple_choice_question(id, title; subquestions=tovector(children()), kwargs...)
 end
