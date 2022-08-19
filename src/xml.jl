@@ -82,11 +82,14 @@ SurveyIterator(survey_id) = SurveyIterator(survey_id, 0, 0, 0, 0, 0, 0)
 
 function add_survey!(root::EzXML.Node, survey::Survey)
     surveys_node = add_unique_node!(root, "surveys")
+    survey_node = add_row_node!(surveys_node)
 
-    for language in languages(survey)
-        survey_node = add_row_node!(surveys_node)
-        add_cdata_node!(survey_node, "sid", survey.id)
-        add_cdata_node!(survey_node, "language", language)
+    add_cdata_node!(survey_node, "sid", survey.id)
+    add_cdata_node!(survey_node, "language", default_language(survey))
+
+    additional_languages = languages(survey)[2:end]
+    if length(additional_languages) > 0
+        add_cdata_node!(survey_node, "additional_languages", join(additional_languages, " "))
     end
 
     iterator = SurveyIterator(survey.id)
@@ -154,6 +157,10 @@ function add_question!(root::EzXML.Node, question::Question, iterator::SurveyIte
         add_default_value!(root, question, iterator)
     end
 
+    for attribute in attributes(question)
+        add_question_attribute!(root, attribute, iterator)
+    end
+
     for (subquestion_order, subquestion) in enumerate(question.subquestions)
         iterator.counter += 1
         iterator.order = subquestion_order
@@ -165,6 +172,21 @@ function add_question!(root::EzXML.Node, question::Question, iterator::SurveyIte
         # LimeSurveys scale_id starts at 0
         iterator.scale_id = scale_id - 1
         add_response_scale!(root, scale, iterator)
+    end
+
+    return nothing
+end
+
+function add_question_attribute!(root::EzXML.Node, attribute::QuestionAttribute, iterator::SurveyIterator)
+    attributes_node = add_unique_node!(root, "question_attributes")
+
+    attribute_node = add_row_node!(attributes_node)
+    add_cdata_node!(attribute_node, "qid", iterator.question_id)
+    add_cdata_node!(attribute_node, "attribute", attribute.attribute)
+    add_cdata_node!(attribute_node, "value", attribute.value)
+
+    if !isnothing(attribute.language)
+        add_cdata_node!(attribute_node, "language", attribute.language)
     end
 
     return nothing

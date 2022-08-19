@@ -33,13 +33,21 @@ struct ResponseScale <: AbstractSurveyComponent
     language_settings::LanguageSettings
 end
 
-function response_scale(options::VectorOrElement{ResponseOption}; default=nothing, same_default=false)
-    settings = language_settings(default_language(), ""; default, same_default)
-    return ResponseScale(tovector(options), settings)
+function response_scale(options::VectorOrElement{ResponseOption}, language_settings::LanguageSettings)
+    return ResponseScale(tovector(options), language_settings)
 end
 
-function response_scale(options::Function; kwargs...)
-    return response_scale(tovector(options()); kwargs...)
+function response_scale(options::Function, language_settings::LanguageSettings)
+    return response_scale(tovector(options()), language_settings)
+end
+
+function response_scale(options::VectorOrElement{ResponseOption}, title=""; default=nothing, same_default=false)
+    settings = language_settings(default_language(), title; default, same_default)
+    return response_scale(options, settings)
+end
+
+function response_scale(options::Function, title=""; kwargs...)
+    return response_scale(tovector(options()), title; kwargs...)
 end
 
 function default(scale::ResponseScale, language::String=default_language())
