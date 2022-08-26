@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Construct multi-language surveys · LimeSurveyBuilder.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="https://p-gw.github.io/LimeSurveyBuilder.jl/tutorials/multi_language/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.044/juliamono.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">LimeSurveyBuilder.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../getting_started/">Getting Started</a></li><li><span class="tocitem">Tutorials</span><ul><li><a class="tocitem" href="../basic/">Construct basic surveys</a></li><li class="is-active"><a class="tocitem" href>Construct multi-language surveys</a><ul class="internal"><li><a class="tocitem" href="#Alternative-approach"><span>Alternative approach</span></a></li></ul></li><li><a class="tocitem" href="../from_data/">Construct surveys programmatically</a></li><li><a class="tocitem" href="../custom_question_types/">Creating custom question types</a></li></ul></li><li><span class="tocitem">API</span><ul><li><a class="tocitem" href="../../lib/types/">Types</a></li><li><a class="tocitem" href="../../lib/functions/">Functions</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tutorials</a></li><li class="is-active"><a href>Construct multi-language surveys</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Construct multi-language surveys</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/p-gw/LimeSurveyBuilder.jl/blob/master/docs/src/tutorials/multi_language.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Constructing-multi-language-surveys"><a class="docs-heading-anchor" href="#Constructing-multi-language-surveys">Constructing multi-language surveys</a><a id="Constructing-multi-language-surveys-1"></a><a class="docs-heading-anchor-permalink" href="#Constructing-multi-language-surveys" title="Permalink"></a></h1><p>In some cases <a href="../basic/">constructing basic surveys</a> is insufficient and one is required to build multi-language surveys. Multi-language surveys can be created in LimeSurveyBuilder.</p><p>As an example consider a continuation of the <a href="../basic/">Constructing basic surveys</a> tutorial where we built a survey for a statistics 101 course. In this survey we asked for </p><ol><li>the gender, </li><li>the age, and </li><li>the height</li></ol><p>of the survey participants.</p><p>In the following example our statistics 101 course is split into two groups: In the first group the course is held in German while in the second group the course is held in English. We still want to analyse the participants data together, so we create a single multi-language survey.</p><p>First, since the majority of our participants will be German-speaking we set the default language to German. </p><pre><code class="language-julia hljs">using LimeSurveyBuilder
+
+set_default_language!(&quot;de&quot;)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">[ Info: LimeSurvey default language set to &#39;de&#39;.</code></pre><p>Then we can begin the survey construction following the previous tutorial.  The difference is that instead of constructing our survey components using an <code>id</code> and a <code>title</code>, we now have to define titles for each language specifically.  We can do this by providing <a href="../../lib/functions/#LimeSurveyBuilder.language_settings"><code>language_settings</code></a> instead of a simple title.</p><p>In addition to the three questions we also include a <a href="../../lib/functions/#LimeSurveyBuilder.language_switch"><code>language_switch</code></a> in the beginning of our survey. Our statistics survey constructor then looks like this: </p><pre><code class="language-julia hljs">my_statistics_survey = survey(100000, language_settings([
+    language_setting(&quot;de&quot;, &quot;Statistik 101 Fragebogen&quot;),
+    language_setting(&quot;en&quot;, &quot;Statistics 101 survey&quot;)
+])) do
+    question_group(1, &quot;&quot;) do
+        language_switch(&quot;language&quot;, language_settings([
+            language_setting(&quot;de&quot;, &quot;Bitte wähle eine Sprache aus.&quot;),
+            language_setting(&quot;en&quot;, &quot;Please select a language.&quot;)
+        ])),
+        gender_select(&quot;gender&quot;, language_settings([
+            language_setting(&quot;de&quot;, &quot;Bitte wähle dein Geschlecht aus.&quot;),
+            language_setting(&quot;en&quot;, &quot;Please select your gender.&quot;)
+        ])),
+        numerical_input(&quot;age&quot;, language_settings([
+            language_setting(&quot;de&quot;, &quot;Bitte gib dein Alter in Jahren an.&quot;),
+            language_setting(&quot;en&quot;, &quot;Please state your age in years.&quot;)
+        ]), minimum=18, integer_only=true),
+        numerical_input(&quot;height&quot;, language_settings([
+            language_setting(&quot;de&quot;, &quot;Bitte gib deine Größe in Zentimeter an.&quot;),
+            language_setting(&quot;en&quot;, &quot;Please state your height in centimeters.&quot;)
+        ]), minimum=0, maximum=250, integer_only=true)
+    end
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Survey with 1 group and 4 questions.
+Statistik 101 Fragebogen (id: 100000)
+└──  (id: 1)
+    ├── Bitte wähle eine Sprache aus. (id: language)
+    ├── Bitte wähle dein Geschlecht aus. (id: gender)
+    ├── Bitte gib dein Alter in Jahren an. (id: age)
+    └── Bitte gib deine Größe in Zentimeter an. (id: height)
+</code></pre><p>Since we have to provide the localization for all survey languages, each component must contain at least a <code>title</code> for all languages. </p><p>The completed survey can be exported to an <code>.lss</code> file using <a href="../../lib/functions/#Base.write"><code>write</code></a>.</p><pre><code class="language-julia hljs">write(&quot;statistics_101_multi_language.lss&quot;, my_statistics_survey)</code></pre><h2 id="Alternative-approach"><a class="docs-heading-anchor" href="#Alternative-approach">Alternative approach</a><a id="Alternative-approach-1"></a><a class="docs-heading-anchor-permalink" href="#Alternative-approach" title="Permalink"></a></h2><p>Just like in the <a href="../basic/">basic surveys</a> tutorial we can make use of the alternative approach to survey construction. In this case we just have to substitute the single-language survey components with their multi-language equivalents. </p><pre><code class="language-julia hljs">using LimeSurveyBuilder
+
+my_statistics_survey = survey(100000, language_settings([
+    language_setting(&quot;de&quot;, &quot;Statistik 101 Fragebogen&quot;),
+    language_setting(&quot;en&quot;, &quot;Statistics 101 survey&quot;)
+]))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Survey with 0 groups and 0 questions.
+Statistik 101 Fragebogen (id: 100000)
+</code></pre><p>After creating the survey, we can add the required question group</p><pre><code class="language-julia hljs">g1 = question_group(1, &quot;&quot;)
+append!(my_statistics_survey, g1)
+
+my_statistics_survey</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Survey with 1 group and 0 questions.
+Statistik 101 Fragebogen (id: 100000)
+└──  (id: 1)
+</code></pre><p>Finally, the questions can be appended one by one.</p><pre><code class="language-julia hljs">append!(g1, language_switch(&quot;language&quot;, language_settings([
+    language_setting(&quot;de&quot;, &quot;Bitte wähle eine Sprache aus.&quot;),
+    language_setting(&quot;en&quot;, &quot;Please select a language.&quot;)
+])))
+
+append!(g1, gender_select(&quot;gender&quot;, language_settings([
+    language_setting(&quot;de&quot;, &quot;Bitte wähle dein Geschlecht aus.&quot;),
+    language_setting(&quot;en&quot;, &quot;Please select your gender.&quot;)
+])))
+
+append!(g1, numerical_input(&quot;age&quot;, language_settings([
+    language_setting(&quot;de&quot;, &quot;Bitte gib dein Alter in Jahren an.&quot;),
+    language_setting(&quot;en&quot;, &quot;Please state your age in years.&quot;)
+]), minimum=18, integer_only=true))
+
+append!(g1, numerical_input(&quot;height&quot;, language_settings([
+    language_setting(&quot;de&quot;, &quot;Bitte gib deine Größe in Zentimeter an.&quot;),
+    language_setting(&quot;en&quot;, &quot;Please state your height in centimeters.&quot;)
+]), minimum=0, maximum=250, integer_only=true))
+
+my_statistics_survey</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Survey with 1 group and 4 questions.
+Statistik 101 Fragebogen (id: 100000)
+└──  (id: 1)
+    ├── Bitte wähle eine Sprache aus. (id: language)
+    ├── Bitte wähle dein Geschlecht aus. (id: gender)
+    ├── Bitte gib dein Alter in Jahren an. (id: age)
+    └── Bitte gib deine Größe in Zentimeter an. (id: height)
+</code></pre><p>This approach will yield an identical survey.  Again, to save the completed survey simply use <a href="../../lib/functions/#Base.write"><code>write</code></a>.</p><pre><code class="language-julia hljs">write(&quot;statistics_101_multi_language.lss&quot;, my_statistics_survey)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../basic/">« Construct basic surveys</a><a class="docs-footer-nextpage" href="../from_data/">Construct surveys programmatically »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.16 on <span class="colophon-date" title="Friday 26 August 2022 08:09">Friday 26 August 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
