@@ -1,3 +1,12 @@
+"""
+    ResponseOption <: AbstractSurveyComponent
+
+A type representing a single response option for a LimeSurvey question.
+
+# Fields
+- `id::String`: A LimeSurvey ID for the response option
+- `language_settings::LanguageSettings`: The language settings for the response option
+"""
 struct ResponseOption <: AbstractSurveyComponent
     id::String
     language_settings::LanguageSettings
@@ -10,6 +19,15 @@ end
 
 function response_option(id, language_settings::LanguageSettings) end
 
+"""
+    ResponseScale <: AbstractSurveyComponent
+
+A type representing a collection of [`ResponseOption`](@ref) for a LimeSurvey question.
+
+# Fields
+- `options::Vector{ResponseOption}`: A vector of response options
+- `language_settings::LanguageSettings`: The language settings for the response scale.
+"""
 struct ResponseScale <: AbstractSurveyComponent
     options::Vector{ResponseOption}
     language_settings::LanguageSettings

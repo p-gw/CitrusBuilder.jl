@@ -1,5 +1,7 @@
 """
-    SubQuestion
+    SubQuestion <: AbstractQuestion
+
+A type representing subquestions of a LimeSurvey question.
 
 # Fields
 - `id::String`: An alphanumeric question id. Must start with a letter.
@@ -13,7 +15,6 @@ struct SubQuestion <: AbstractQuestion
     relevance::String
     language_settings::LanguageSettings
     scale_id::Int
-    # TODO: validate id
 end
 
 """

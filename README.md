@@ -52,21 +52,6 @@ To export your survey simply call `write`,
 write("my_basic_survey.lss", basic_survey)
 ```
 
-The resulting xml file can be imported on the server using the [LimeSurvey import function](https://manual.limesurvey.org/Surveys_-_introduction#Import_a_survey).
+The resulting xml file can be imported on the server using the [LimeSurvey import function](https://manual.limesurvey.org/Surveys_-_introduction#Import_a_survey) or [LimeSurveyAPI.jl](https://github.com/p-gw/LimeSurveyAPI.jl).
 
-## Question types
-`LimeSurveyBuilder.jl` aims to implement all LimeSurvey question types. Currently the following question types are available
-
-- `short_text_question`
-- `long_text_question`
-- `huge_text_question`
-- `multiple_short_text_question`
-- `five_point_choice_question`
-- `dropdown_list_question`
-- `radio_list_question`
-- `multiple_choice_question`
-- `array_five_point_choice_question`
-- `array_ten_point_choice_question`
-- `array_yes_no_question`
-- `array_increase_decrease_question`
-- `array_question`
+For more details on how to use this package, please refer to the [documentation](https://p-gw.github.io/LimeSurveyBuilder.jl/dev).
