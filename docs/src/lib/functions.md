@@ -83,8 +83,18 @@ language_setting
 ```
 
 ## Accessors
-### Question
 ```@docs
+id
+title
+help
+has_description
+description
+languages
+same_default
+has_help
+default_language
+default
+has_default
 is_mandatory
 has_other
 has_subquestions
@@ -93,7 +103,17 @@ has_attributes
 attributes
 ```
 
+## Setters
+```@docs
+set_default_language!
+```
+
 ## IO
 ```@docs
 write
+```
+
+## XML
+```@docs
+xml
 ```

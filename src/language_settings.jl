@@ -15,7 +15,7 @@ default_language() = DEFAULT_LANGUAGE[]
 """
     set_default_language!(lang::String)
 
-Set `DEFAULT_LANGUAGE` of LimeSurvey.
+Set `DEFAULT_LANGUAGE` of LimeSurveyBuilder.
 
 # Examples
 ```julia
@@ -24,7 +24,7 @@ set_default_language!("de")
 ```
 
 # See also
-To get the current value of `DEFAULT_LANGUAGE` see [`default_language`](@ref)
+To get the current value of `DEFAULT_LANGUAGE` see [`default_language`](@ref).
 """
 function set_default_language!(lang::String)
     @info "LimeSurvey default language set to '$(lang)'."
