@@ -1,5 +1,5 @@
 ```@meta
-CurrentModule = LimeSurveyBuilder
+CurrentModule = CitrusBuilder
 ```
 
 # Types

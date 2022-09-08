@@ -4,7 +4,7 @@
         @test s.id == 100000
         @test languages(s) == ["en"]
         @test default_language(s) == "en"
-        @test s.children == LimeSurveyBuilder.QuestionGroup[]
+        @test s.children == CitrusBuilder.QuestionGroup[]
 
         settings = language_settings([
             language_setting("en", "survey title"),
@@ -15,7 +15,7 @@
         @test s.id == 100001
         @test languages(s) == ["en", "de"]
         @test default_language(s) == "en"
-        @test s.children == LimeSurveyBuilder.QuestionGroup[]
+        @test s.children == CitrusBuilder.QuestionGroup[]
     end
 
     @testset "do ... end construction" begin

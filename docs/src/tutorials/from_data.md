@@ -1,7 +1,7 @@
 # Constructing surveys programmatically
 
 In this tutorial we will see how we can build surveys from an external data source. 
-The iterative survey construction method in LimeSurveyBuilder makes it easy to accomplish this task.
+The iterative survey construction method in CitrusBuilder makes it easy to accomplish this task.
 
 Consider for example that you have a csv file for each survey where each row defines a question in the survey. 
 The questions might be default questions or more complex custom question types as described in the tutorial [Constructing custom question types](custom_question_types.md).
@@ -20,10 +20,10 @@ In this example we define,
 - *text*: [`short_text_question`](@ref)
 - *1-5*: [`five_point_choice_question`](@ref)
 
-For convenience we can create a custom function that maps the string in the data frame to a [`LimeSurveyBuilder.Question`](@ref)
+For convenience we can create a custom function that maps the string in the data frame to a [`CitrusBuilder.Question`](@ref)
 
 ```@example from-data
-using LimeSurveyBuilder
+using CitrusBuilder
 
 function question(type, args...; kwargs...)
     if type == "text"

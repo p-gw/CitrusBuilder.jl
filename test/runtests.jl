@@ -1,10 +1,10 @@
 using Dates
-using LimeSurveyBuilder
+using CitrusBuilder
 using Random
 using Test
 using EzXML
 
-@testset "LimeSurveyBuilder.jl" begin
+@testset "CitrusBuilder.jl" begin
     include("language_settings.jl")
     include("utils.jl")
     include("subquestion.jl")

@@ -10,7 +10,7 @@ In this case we want to return a `Tuple` of questions consisting of one [`dropdo
     Dynamically showing question makes use of LimeSurveys [relevance equations](https://manual.limesurvey.org/ExpressionScript_-_Presentation). Relevance equations for questions can be set using the `relevance` keyword argument.
 
 ```@example custom_types
-using LimeSurveyBuilder
+using CitrusBuilder
 
 function dropdown_with_comment(id, title, options, show_comment)
     dropdown = dropdown_list_question("$(id)", title, options)

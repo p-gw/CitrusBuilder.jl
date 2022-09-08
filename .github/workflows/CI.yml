@@ -54,6 +54,6 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using LimeSurveyBuilder
-            DocMeta.setdocmeta!(LimeSurveyBuilder, :DocTestSetup, :(using LimeSurveyBuilder); recursive=true)
-            doctest(LimeSurveyBuilder)'
+            using CitrusBuilder
+            DocMeta.setdocmeta!(CitrusBuilder, :DocTestSetup, :(using CitrusBuilder); recursive=true)
+            doctest(CitrusBuilder)'

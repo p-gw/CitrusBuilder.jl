@@ -1,6 +1,6 @@
 # Constructing multi-language surveys
 
-In some cases [constructing basic surveys](basic.md) is insufficient and one is required to build multi-language surveys. Multi-language surveys can be created in LimeSurveyBuilder.
+In some cases [constructing basic surveys](basic.md) is insufficient and one is required to build multi-language surveys. Multi-language surveys can be created in CitrusBuilder.
 
 As an example consider a continuation of the [Constructing basic surveys](basic.md) tutorial where we built a survey for a statistics 101 course. In this survey we asked for 
 
@@ -15,7 +15,7 @@ In the following example our statistics 101 course is split into two groups: In 
 First, since the majority of our participants will be German-speaking we set the default language to German. 
 
 ```@example multi-language
-using LimeSurveyBuilder 
+using CitrusBuilder 
 
 set_default_language!("de")
 ```
@@ -64,7 +64,7 @@ write("statistics_101_multi_language.lss", my_statistics_survey)
 Just like in the [basic surveys](basic.md) tutorial we can make use of the alternative approach to survey construction. In this case we just have to substitute the single-language survey components with their multi-language equivalents. 
 
 ```@example multi-language_bang
-using LimeSurveyBuilder 
+using CitrusBuilder 
 
 my_statistics_survey = survey(100000, language_settings([
     language_setting("de", "Statistik 101 Fragebogen"),

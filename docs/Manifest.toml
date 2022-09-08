@@ -189,7 +189,7 @@ git-tree-sha1 = "42b62845d70a619f063a7da093d995ec8e15e778"
 uuid = "94ce4f54-9a6c-5748-9c1c-f9c7231a4531"
 version = "1.16.1+1"
 
-[[deps.LimeSurveyBuilder]]
+[[deps.CitrusBuilder]]
 deps = ["EzXML"]
 path = ".."
 uuid = "28cec04b-85b5-4b92-beb9-e8851fc733f1"

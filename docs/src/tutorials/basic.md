@@ -1,6 +1,6 @@
 # Constructing basic surveys
 
-LimeSurveyBuilder offers two different modes of survey building. Both modes of construction are suitable for different use cases. To create simple surveys the survey structure can be created at once by using the `do ... end` syntax. All survey components that have child elements, e.g. [`survey`](@ref), [`question_group`](@ref) or [`multiple_short_text_question`](@ref), do allow for this method of construction.
+CitrusBuilder offers two different modes of survey building. Both modes of construction are suitable for different use cases. To create simple surveys the survey structure can be created at once by using the `do ... end` syntax. All survey components that have child elements, e.g. [`survey`](@ref), [`question_group`](@ref) or [`multiple_short_text_question`](@ref), do allow for this method of construction.
 
 Let's imagine we want to create a simple survey for an introductory statistics class where we want to gather data on the *age* (in years), *gender*, and *height* (in cm) of the students. 
 
@@ -13,7 +13,7 @@ In order to accomplish this, we need to construct a survey with
     LimeSurvey requires that questions are nested within a question group. In order to construct a valid survey we must respect this restriction even if no question grouping is needed.
 
 ```@example basic
-using LimeSurveyBuilder
+using CitrusBuilder
 
 my_statistics_survey = survey(100000, "Statistics 101 survey") do
     question_group(1, "") do  # this is a dummy question group, no title needed
@@ -36,12 +36,12 @@ write("statistics_101.lss", my_statistics_survey)
 ```
 
 ## Alternative approach
-An alternative to the basic survey construction outlined in the previous section is to build the survey iteratively. LimeSurveyBuilder overloads the Julia Base functions [`append!`](@ref), [`insert!`](@ref), and [`prepend!`](@ref). These functions can be used to append, insert or prepend survey components to a survey respectively. A simple example of this method was given in the [Getting Started](../getting_started.md##Now-what?) section.
+An alternative to the basic survey construction outlined in the previous section is to build the survey iteratively. CitrusBuilder overloads the Julia Base functions [`append!`](@ref), [`insert!`](@ref), and [`prepend!`](@ref). These functions can be used to append, insert or prepend survey components to a survey respectively. A simple example of this method was given in the [Getting Started](../getting_started.md##Now-what?) section.
 
 Consider again the example from the previous section: A survey gathering data on the *age*, *gender*, and *height* of the survey participants. Using this approach we first must construct an empty survey,
 
 ```@example basic_bang
-using LimeSurveyBuilder 
+using CitrusBuilder 
 
 my_statistics_survey = survey(100000, "Statistics 101 survey")
 ```

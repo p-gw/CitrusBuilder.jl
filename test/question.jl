@@ -241,11 +241,11 @@
             ]
 
             for (type, lstype) in valid_types
-                @test LimeSurveyBuilder.array_question_type(type) == lstype
+                @test CitrusBuilder.array_question_type(type) == lstype
             end
 
-            @test_throws ErrorException LimeSurveyBuilder.array_question_type("unknown")
-            @test_throws ErrorException LimeSurveyBuilder.array_question_type(1)
+            @test_throws ErrorException CitrusBuilder.array_question_type("unknown")
+            @test_throws ErrorException CitrusBuilder.array_question_type(1)
 
             # single scale array questions
             scale = response_scale([
@@ -309,19 +309,19 @@
             @test id(q) == "q1"
             @test title(q) == "title"
             @test has_attributes(q) == false
-            @test q.attributes isa Vector{LimeSurveyBuilder.QuestionAttribute}
+            @test q.attributes isa Vector{CitrusBuilder.QuestionAttribute}
 
             q = date_select("q2", "title", minimum=today())
             @test has_attributes(q) == true
             @test length(q.attributes) == 1
-            @test first(q.attributes) == LimeSurveyBuilder.QuestionAttribute("date_min", nothing, today())
+            @test first(q.attributes) == CitrusBuilder.QuestionAttribute("date_min", nothing, today())
 
             q = date_select("q3", language_settings("en", "title"), maximum="2022-01-01")
             @test id(q) == "q3"
             @test title(q) == "title"
             @test has_attributes(q) == true
             @test length(q.attributes) == 1
-            @test first(q.attributes) == LimeSurveyBuilder.QuestionAttribute("date_max", nothing, "2022-01-01")
+            @test first(q.attributes) == CitrusBuilder.QuestionAttribute("date_max", nothing, "2022-01-01")
         end
 
         @testset "file_upload" begin
@@ -368,7 +368,7 @@
 
             q = numerical_input("q3", "int only", integer_only=true)
             @test has_attributes(q) == true
-            @test first(q.attributes) == LimeSurveyBuilder.QuestionAttribute("num_value_int_only", nothing, "1")
+            @test first(q.attributes) == CitrusBuilder.QuestionAttribute("num_value_int_only", nothing, "1")
 
             q = numerical_input("q4", "restricted range", minimum=0, maximum=10)
             @test has_attributes(q) == true

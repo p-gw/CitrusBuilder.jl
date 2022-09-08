@@ -1,4 +1,4 @@
-module LimeSurveyBuilder
+module CitrusBuilder
 
 using Base: @kwdef
 using Base: prepend!

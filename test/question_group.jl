@@ -7,7 +7,7 @@
     @test description(g) == ""
     @test description(g, "en") == ""
     @test_throws ErrorException description(g, "de")
-    @test children(g) == LimeSurveyBuilder.Question[]
+    @test children(g) == CitrusBuilder.Question[]
 
     g = question_group(1, "", description="") do
         short_text_question("q1", "title")

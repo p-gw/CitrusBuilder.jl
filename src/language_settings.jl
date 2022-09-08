@@ -3,7 +3,7 @@ const DEFAULT_LANGUAGE = Ref("en")
 """
     default_language()
 
-Get the currently set LimeSurvey default language (default: "en").
+Get the currently set default language (default: "en").
 If no explicit language is provided when constructing `Survey`, `QuestionGroup` or `Question`
 the survey components will inherit the default language.
 
@@ -15,19 +15,19 @@ default_language() = DEFAULT_LANGUAGE[]
 """
     set_default_language!(lang::String)
 
-Set `DEFAULT_LANGUAGE` of LimeSurveyBuilder.
+Set `DEFAULT_LANGUAGE` of CitrusBuilder.
 
 # Examples
 ```julia
 set_default_language!("de")
-[ Info: LimeSurvey default language set to 'de'.
+[ Info: Default language set to 'de'.
 ```
 
 # See also
 To get the current value of `DEFAULT_LANGUAGE` see [`default_language`](@ref).
 """
 function set_default_language!(lang::String)
-    @info "LimeSurvey default language set to '$(lang)'."
+    @info "Default language set to '$(lang)'."
     DEFAULT_LANGUAGE[] = lang
     return nothing
 end

@@ -1,16 +1,16 @@
-using LimeSurveyBuilder
+using CitrusBuilder
 using Documenter
 
-DocMeta.setdocmeta!(LimeSurveyBuilder, :DocTestSetup, :(using LimeSurveyBuilder); recursive=true)
+DocMeta.setdocmeta!(CitrusBuilder, :DocTestSetup, :(using CitrusBuilder); recursive=true)
 
 makedocs(;
-    modules=[LimeSurveyBuilder],
+    modules=[CitrusBuilder],
     authors="Philipp Gewessler",
-    repo="https://github.com/p-gw/LimeSurveyBuilder.jl/blob/{commit}{path}#{line}",
-    sitename="LimeSurveyBuilder.jl",
+    repo="https://github.com/p-gw/CitrusBuilder.jl/blob/{commit}{path}#{line}",
+    sitename="CitrusBuilder.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://p-gw.github.io/LimeSurveyBuilder.jl",
+        canonical="https://p-gw.github.io/CitrusBuilder.jl",
         assets=String[]
     ),
     pages=[
@@ -30,6 +30,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/p-gw/LimeSurveyBuilder.jl",
+    repo="github.com/p-gw/CitrusBuilder.jl",
     devbranch="main"
 )

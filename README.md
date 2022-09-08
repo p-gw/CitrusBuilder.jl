@@ -1,9 +1,9 @@
-# LimeSurveyBuilder.jl
+# CitrusBuilder.jl
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://p-gw.github.io/LimeSurveyBuilder.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://p-gw.github.io/LimeSurveyBuilder.jl/dev)
-[![Build Status](https://github.com/p-gw/LimeSurveyBuilder.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/p-gw/LimeSurveyBuilder.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/p-gw/LimeSurveyBuilder.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/p-gw/LimeSurveyBuilder.jl)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://p-gw.github.io/CitrusBuilder.jl/stable)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://p-gw.github.io/CitrusBuilder.jl/dev)
+[![Build Status](https://github.com/p-gw/CitrusBuilder.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/p-gw/CitrusBuilder.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Coverage](https://codecov.io/gh/p-gw/CitrusBuilder.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/p-gw/CitrusBuilder.jl)
 
 This Julia package provides utilities to construct surveys that can be uploaded to a running [LimeSurvey](https://www.limesurvey.org/) server. 
 
@@ -54,4 +54,4 @@ write("my_basic_survey.lss", basic_survey)
 
 The resulting xml file can be imported on the server using the [LimeSurvey import function](https://manual.limesurvey.org/Surveys_-_introduction#Import_a_survey) or [LimeSurveyAPI.jl](https://github.com/p-gw/LimeSurveyAPI.jl).
 
-For more details on how to use this package, please refer to the [documentation](https://p-gw.github.io/LimeSurveyBuilder.jl/dev).
+For more details on how to use this package, please refer to the [documentation](https://p-gw.github.io/CitrusBuilder.jl/dev).

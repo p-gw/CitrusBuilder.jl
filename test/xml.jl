@@ -1,6 +1,6 @@
 @testset "XML exports" begin
     @testset "create_document!" begin
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         @test doc isa EzXML.Document
         @test version(doc) == "1.0"
         @test hasroot(doc) == true
@@ -9,23 +9,23 @@
     end
 
     @testset "add_unique_node!" begin
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        testnode = LimeSurveyBuilder.add_unique_node!(docroot, "testnode")
+        testnode = CitrusBuilder.add_unique_node!(docroot, "testnode")
 
         @test countnodes(docroot) == 1
         @test nodetype(testnode) == EzXML.ELEMENT_NODE
         @test nodename(testnode) == "testnode"
 
-        testnode_duplicate = LimeSurveyBuilder.add_unique_node!(docroot, "testnode")
+        testnode_duplicate = CitrusBuilder.add_unique_node!(docroot, "testnode")
         @test countnodes(docroot) == 1
         @test testnode == testnode_duplicate
     end
 
     @testset "add_node!" begin
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        element_node = LimeSurveyBuilder.add_node!(docroot, "testnode", CDataNode("data"))
+        element_node = CitrusBuilder.add_node!(docroot, "testnode", CDataNode("data"))
         @test countnodes(docroot) == 1
         @test iscdata(element_node) == true
 
@@ -42,19 +42,19 @@
         # no uniqueness constraint
         n = 3
         for i in 1:n
-            LimeSurveyBuilder.add_node!(docroot, "node_$i", CDataNode("$i"))
+            CitrusBuilder.add_node!(docroot, "node_$i", CDataNode("$i"))
         end
 
         @test countnodes(docroot) == n + 1
     end
 
     @testset "add_row_node!" begin
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
         n = 5
         for i in 1:n
-            row_node = LimeSurveyBuilder.add_row_node!(docroot)
+            row_node = CitrusBuilder.add_row_node!(docroot)
             @test nodename(row_node) == "row"
         end
 
@@ -63,33 +63,33 @@
         @test countnodes(rows_node) == n
 
         # with preexisting 'rows' node
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
-        rows_node = LimeSurveyBuilder.add_unique_node!(docroot, "rows")
+        rows_node = CitrusBuilder.add_unique_node!(docroot, "rows")
 
         for i in 1:n
-            LimeSurveyBuilder.add_row_node!(docroot)
+            CitrusBuilder.add_row_node!(docroot)
         end
 
         @test countnodes(rows_node) == n
     end
 
     @testset "add_cdata_node!" begin
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
         inputs = ["test", 1, 1.0, 1 // 3]
 
         for (i, input) in enumerate(inputs)
-            cdata_node = LimeSurveyBuilder.add_cdata_node!(docroot, "node_$i", input)
+            cdata_node = CitrusBuilder.add_cdata_node!(docroot, "node_$i", input)
             @test nodename(parentnode(cdata_node)) == "node_$i"
             @test nodecontent(cdata_node) == string(input)
         end
     end
 
     @testset "add_languages!" begin
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
         s = survey(100000, language_settings([
@@ -97,7 +97,7 @@
             language_setting("de", "Titel")
         ]))
 
-        languages_node = LimeSurveyBuilder.add_languages!(docroot, s)
+        languages_node = CitrusBuilder.add_languages!(docroot, s)
         @test nodename(languages_node) == "languages"
         @test countnodes(languages_node) == 2
 
@@ -108,7 +108,7 @@
     end
 
     @testset "add_header!" begin
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
         s = survey(100000, language_settings([
@@ -116,7 +116,7 @@
             language_setting("de", "Titel")
         ]))
 
-        LimeSurveyBuilder.add_header!(docroot, s)
+        CitrusBuilder.add_header!(docroot, s)
         @test countnodes(docroot) == 2
 
         survey_type_node = first(nodes(docroot))
@@ -128,7 +128,7 @@
     end
 
     @testset "SurveyIterator" begin
-        iterator = LimeSurveyBuilder.SurveyIterator(123456)
+        iterator = CitrusBuilder.SurveyIterator(123456)
         @test iterator.survey_id == 123456
         @test iterator.group_id == 0
         @test iterator.question_id == 0
@@ -140,9 +140,9 @@
     @testset "add_survey!" begin
         s = survey(100000, "testsurvey 1")
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        LimeSurveyBuilder.add_survey!(docroot, s)
+        CitrusBuilder.add_survey!(docroot, s)
 
         @test countnodes(docroot) == 1
         surveys_node = first(nodes(docroot))
@@ -169,9 +169,9 @@
             language_setting("de", "Titel")
         ]))
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        LimeSurveyBuilder.add_survey!(docroot, s)
+        CitrusBuilder.add_survey!(docroot, s)
 
         @test countnodes(docroot) == 1
         surveys_node = first(nodes(docroot))
@@ -194,9 +194,9 @@
             language_setting("es", "titulo")
         ]))
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        LimeSurveyBuilder.add_survey!(docroot, s)
+        CitrusBuilder.add_survey!(docroot, s)
         surveys_node = first(nodes(docroot))
         rows_node = first(nodes(surveys_node))
         row_node = first(nodes(rows_node))
@@ -211,9 +211,9 @@
             (question_group(i, "group $i") for i in 1:n_groups)
         end
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        LimeSurveyBuilder.add_survey!(docroot, s)
+        CitrusBuilder.add_survey!(docroot, s)
 
         @test nodename.(nodes(docroot)) == ["surveys", "groups"]
         surveys_node, groups_node = nodes(docroot)
@@ -234,12 +234,12 @@
     @testset "add_question_group!" begin
         # without questions
         group = question_group(100, "group title")
-        iterator = LimeSurveyBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
+        iterator = CitrusBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
-        LimeSurveyBuilder.add_question_group!(docroot, group, iterator)
+        CitrusBuilder.add_question_group!(docroot, group, iterator)
 
         @test iterator.survey_id == 1
         @test iterator.group_id == 2
@@ -261,7 +261,7 @@
 
         # with description
         group = question_group(101, "second group", description="some description")
-        LimeSurveyBuilder.add_question_group!(docroot, group, iterator)
+        CitrusBuilder.add_question_group!(docroot, group, iterator)
 
         row_node = last(nodes(rows_node))
         @test nodename.(nodes(row_node)) == ["gid", "sid", "group_order", "group_name", "language", "description"]
@@ -273,11 +273,11 @@
             (short_text_question("q$i", "question $i") for i in 1:n)
         end
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
-        iterator = LimeSurveyBuilder.SurveyIterator(1, 1, 1, 1, 1, 1, 1)
-        LimeSurveyBuilder.add_question_group!(docroot, group, iterator)
+        iterator = CitrusBuilder.SurveyIterator(1, 1, 1, 1, 1, 1, 1)
+        CitrusBuilder.add_question_group!(docroot, group, iterator)
 
         @test iterator.survey_id == 1
         @test iterator.group_id == 1
@@ -304,12 +304,12 @@
     @testset "add_question!" begin end
 
     @testset "add_question_attribute!" begin
-        attribute = LimeSurveyBuilder.QuestionAttribute("key", nothing, "value")
-        doc = LimeSurveyBuilder.create_document!()
+        attribute = CitrusBuilder.QuestionAttribute("key", nothing, "value")
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        iterator = LimeSurveyBuilder.SurveyIterator(0)
+        iterator = CitrusBuilder.SurveyIterator(0)
 
-        LimeSurveyBuilder.add_question_attribute!(docroot, attribute, iterator)
+        CitrusBuilder.add_question_attribute!(docroot, attribute, iterator)
         @test countnodes(docroot) == 1
 
         attributes_node = first(nodes(docroot))
@@ -323,8 +323,8 @@
         @test nodename.(row_data) == ["qid", "attribute", "value"]
         @test nodecontent.(row_data) == ["0", "key", "value"]
 
-        attribute = LimeSurveyBuilder.QuestionAttribute("a2", "de", "v2")
-        LimeSurveyBuilder.add_question_attribute!(docroot, attribute, iterator)
+        attribute = CitrusBuilder.QuestionAttribute("a2", "de", "v2")
+        CitrusBuilder.add_question_attribute!(docroot, attribute, iterator)
         @test countnodes(rows_node) == 2
 
         row_node = nodes(rows_node)[2]
@@ -336,11 +336,11 @@
 
     @testset "add_subquestion!" begin
         sq = subquestion("sq", "subquestion")
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        iterator = LimeSurveyBuilder.SurveyIterator(0)
+        iterator = CitrusBuilder.SurveyIterator(0)
 
-        LimeSurveyBuilder.add_subquestion!(docroot, sq, iterator)
+        CitrusBuilder.add_subquestion!(docroot, sq, iterator)
         @test countnodes(docroot) == 1
 
         subquestions_node = first(nodes(docroot))
@@ -355,7 +355,7 @@
         @test nodecontent.(row_data) == ["0", "0", "0", "0", "T", "sq", "subquestion", "0", "en", "1", "0", "0"]
 
         sq = subquestion("sq2", "subquestion 2", scale_id=1)
-        LimeSurveyBuilder.add_subquestion!(docroot, sq, iterator)
+        CitrusBuilder.add_subquestion!(docroot, sq, iterator)
         @test countnodes(rows_node) == 2
 
         row_node = nodes(rows_node)[2]
@@ -369,12 +369,12 @@
             response_option("o3", "option 3")
         end
 
-        iterator = LimeSurveyBuilder.SurveyIterator(0)
+        iterator = CitrusBuilder.SurveyIterator(0)
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
-        LimeSurveyBuilder.add_response_scale!(docroot, scale, iterator)
+        CitrusBuilder.add_response_scale!(docroot, scale, iterator)
         @test countnodes(docroot) == 2
         @test nodename.(nodes(docroot)) == ["answers", "defaultvalues"]
 
@@ -396,21 +396,21 @@
             response_option("o1", "option 1")
         end
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        LimeSurveyBuilder.add_response_scale!(docroot, scale, iterator)
+        CitrusBuilder.add_response_scale!(docroot, scale, iterator)
 
         @test nodename.(nodes(docroot)) == ["answers"]
     end
 
     @testset "add_answer!" begin
         option = response_option("o1", "option 1")
-        iterator = LimeSurveyBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
+        iterator = CitrusBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
-        LimeSurveyBuilder.add_answer!(docroot, option, iterator)
+        CitrusBuilder.add_answer!(docroot, option, iterator)
         @test countnodes(docroot) == 1
 
         answers_node = first(nodes(docroot))
@@ -434,11 +434,11 @@
             language_setting("de", "")
         ]))
 
-        iterator = LimeSurveyBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
+        iterator = CitrusBuilder.SurveyIterator(1, 2, 3, 4, 5, 6, 7)
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        defaults_node = LimeSurveyBuilder.add_default_value!(docroot, q, iterator)
+        defaults_node = CitrusBuilder.add_default_value!(docroot, q, iterator)
 
         @test nodename(defaults_node) == "defaultvalues"
         @test countnodes(defaults_node) == 1
@@ -457,10 +457,10 @@
             (response_option("o$i", "option $i") for i in 1:3)
         end
 
-        iterator = LimeSurveyBuilder.SurveyIterator(0)
-        doc = LimeSurveyBuilder.create_document!()
+        iterator = CitrusBuilder.SurveyIterator(0)
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        defaults_node = LimeSurveyBuilder.add_default_value!(docroot, scale, iterator)
+        defaults_node = CitrusBuilder.add_default_value!(docroot, scale, iterator)
         @test nodename(first(nodes(docroot))) == "defaultvalues"
 
         rows_node = first(nodes(defaults_node))
@@ -472,11 +472,11 @@
     end
 
     @testset "add_language_settings!" begin
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
 
         s = survey(100000, "title")
-        LimeSurveyBuilder.add_language_settings!(docroot, s)
+        CitrusBuilder.add_language_settings!(docroot, s)
 
         @test countnodes(docroot) == 1
 
@@ -493,9 +493,9 @@
             language_setting("de", "Titel")
         ]))
 
-        doc = LimeSurveyBuilder.create_document!()
+        doc = CitrusBuilder.create_document!()
         docroot = root(doc)
-        LimeSurveyBuilder.add_language_settings!(docroot, s)
+        CitrusBuilder.add_language_settings!(docroot, s)
         settings_node = first(nodes(docroot))
         rows_node = first(nodes(settings_node))
         @test countnodes(rows_node) == 2

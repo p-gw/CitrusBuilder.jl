@@ -1,6 +1,6 @@
 # Getting Started
-Welcome to the LimeSurveyBuilder *Getting Started* section! 
-LimeSurveyBuilder is a Julia package that allows you to construct LimeSurveys within Julia export their XML structure.
+Welcome to the CitrusBuilder *Getting Started* section! 
+CitrusBuilder is a Julia package that allows you to construct LimeSurveys within Julia export their XML structure.
 The exported `.lss` files can then be imported into a running LimeSurvey instance.
 
 Surveys can be imported by using
@@ -11,36 +11,36 @@ Surveys can be imported by using
 If you are interested in calling the LimeSurvey RemoteControl 2 API from Julia, you can take a look at [LimeSurveyAPI.jl](https://github.com/p-gw/LimeSurveyAPI.jl).
 
 ## Installation
-At the current stage LimeSurveyBuilder is under development and is not registered in the Julia General repository. 
+At the current stage CitrusBuilder is under development and is not registered in the Julia General repository. 
 In order to install the package you have to install it from GitHub.
 
-To install the package open a Julia REPL and execute the following commands, which will install LimeSurveyBuilder from the `main` branch of the GitHub repository.
+To install the package open a Julia REPL and execute the following commands, which will install CitrusBuilder from the `main` branch of the GitHub repository.
 
 ```julia
 using Pkg
-Pkg.add(url="https://github.com/p-gw/LimeSurveyBuilder.jl", rev="main")
+Pkg.add(url="https://github.com/p-gw/CitrusBuilder.jl", rev="main")
 ```
 
 !!! note
-    Please note that LimeSurveyBuilder.jl is currently under active development. 
+    Please note that CitrusBuilder.jl is currently under active development. 
     Therefore the provided API is subject to change. 
-    Keep this in mind if you wish to use LimeSurveyBuilder in your project.
+    Keep this in mind if you wish to use CitrusBuilder in your project.
 
 ## Now what?
-Now that you have installed LimeSurveyBuilder you can start building your surveys!
+Now that you have installed CitrusBuilder you can start building your surveys!
 
 Just call 
 
 ```@example getting-started
-using LimeSurveyBuilder
+using CitrusBuilder
 ```
 
 from the Julia REPL. 
 You can now define your survey structure by calling the [`survey`](@ref) function. 
-In this simple example we construct an empty survey with the survey id `123456` and the title *"Getting started with LimeSurveyBuilder"*. 
+In this simple example we construct an empty survey with the survey id `123456` and the title *"Getting started with CitrusBuilder"*. 
 
 ```@example getting-started
-my_survey = survey(123456, "Getting started with LimeSurveyBuilder")
+my_survey = survey(123456, "Getting started with CitrusBuilder")
 ```
 
 We can then construct question groups and questions and [`append!`](@ref) them to the survey.

@@ -1,5 +1,5 @@
 ```@meta
-CurrentModule = LimeSurveyBuilder
+CurrentModule = CitrusBuilder
 ```
 
 # Functions
@@ -27,7 +27,7 @@ question_group
 ```
 
 ### Question
-LimeSurveyBuilder.jl provides convencience constructors for all question types described in the [LimeSurvey Manual](https://manual.limesurvey.org/Question_types).
+CitrusBuilder.jl provides convencience constructors for all question types described in the [LimeSurvey Manual](https://manual.limesurvey.org/Question_types).
 
 #### Text Questions
 ```@docs

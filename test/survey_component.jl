@@ -1,8 +1,8 @@
 @testset "Survey components" begin
     @testset "Accessor functions" begin
-        struct TestComponent <: LimeSurveyBuilder.AbstractSurveyComponent
+        struct TestComponent <: CitrusBuilder.AbstractSurveyComponent
             id::Int
-            language_settings::LimeSurveyBuilder.LanguageSettings
+            language_settings::CitrusBuilder.LanguageSettings
         end
 
         component = TestComponent(1, language_settings([

@@ -1,11 +1,11 @@
 @testset "Language settings" begin
     @testset "Global language settings" begin
         @test default_language() == "en"
-        @test default_language() == LimeSurveyBuilder.DEFAULT_LANGUAGE[]
+        @test default_language() == CitrusBuilder.DEFAULT_LANGUAGE[]
 
         set_default_language!("de")
         @test default_language() == "de"
-        @test default_language() == LimeSurveyBuilder.DEFAULT_LANGUAGE[]
+        @test default_language() == CitrusBuilder.DEFAULT_LANGUAGE[]
 
         # reset
         set_default_language!("en")
@@ -51,12 +51,12 @@
             language_setting("en", "title")
         ]))
 
-        setting_de = LimeSurveyBuilder.find_language_setting("de", s)
-        setting_en = LimeSurveyBuilder.find_language_setting("en", s)
+        setting_de = CitrusBuilder.find_language_setting("de", s)
+        setting_en = CitrusBuilder.find_language_setting("en", s)
         @test setting_de.language == "de"
         @test setting_de.title == "Titel"
         @test setting_en.language == "en"
         @test setting_en.title == "title"
-        @test_throws ErrorException LimeSurveyBuilder.find_language_setting("asd", s)
+        @test_throws ErrorException CitrusBuilder.find_language_setting("asd", s)
     end
 end
