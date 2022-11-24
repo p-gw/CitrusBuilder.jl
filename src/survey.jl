@@ -14,7 +14,13 @@ struct Survey <: AbstractSurveyComponent
     language_settings::LanguageSettings
     children::Vector{QuestionGroup}
     settings::Dict{String,Any}
+    function Survey(id, language_setting, children, settings)
+        isvalid_survey_id(id) || throw(ArgumentError("Survey id must be between 100000 and 999999"))
+        new(id, language_setting, children, settings)
+    end
 end
+
+isvalid_survey_id(id::Int) = 100_000 <= id <= 999_999
 
 settings(survey::Survey) = survey.settings
 

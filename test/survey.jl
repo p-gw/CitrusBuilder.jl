@@ -1,4 +1,10 @@
 @testset "Survey Constructors" begin
+    @testset "survey id validation" begin
+        @test survey(rand(100000:999999), "valid survey") isa CitrusBuilder.Survey
+        @test_throws ArgumentError survey(1, "invalid survey")
+        @test_throws ArgumentError survey(1_000_000, "invalid survey")
+    end
+
     @testset "empty surveys" begin
         s = survey(100000, "empty survey")
         @test s.id == 100000
