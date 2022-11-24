@@ -12,7 +12,13 @@ struct QuestionGroup <: AbstractSurveyComponent
     id::Int
     language_settings::LanguageSettings
     children::Vector{Question}
+    function QuestionGroup(id, language_settings, children)
+        isvalid_group_id(id) || throw(ArgumentError("Question group id must be larger than 0"))
+        new(id, language_settings, children)
+    end
 end
+
+isvalid_group_id(id::Int) = id > 0
 
 """
     question_group(id, title::String; description, children)

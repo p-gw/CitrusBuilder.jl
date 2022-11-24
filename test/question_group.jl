@@ -1,4 +1,8 @@
 @testset "Question Group Constructors" begin
+    @test_throws MethodError question_group("g1", "title")
+    @test_throws ArgumentError question_group(-1, "title")
+    @test_throws ArgumentError question_group(0, "title")
+
     g = question_group(1, "", description="")
     @test id(g) == 1
     @test title(g) == ""
