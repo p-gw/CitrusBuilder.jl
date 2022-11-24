@@ -1,4 +1,13 @@
 @testset "Question Constructors" begin
+    @testset "question code validation" begin
+        @test short_text_question("q1", "title") isa CitrusBuilder.Question
+        @test_throws MethodError short_text_question(1, "title")
+        @test_throws ArgumentError short_text_question("q", "title")
+        @test_throws ArgumentError short_text_question("q!", "title")
+        @test_throws ArgumentError short_text_question("q_1", "title")
+        @test_throws ArgumentError short_text_question("q?", "title")
+    end
+
     @testset "Text questions" begin
         settings = language_settings([
             language_setting("de", "Titel", help="Hilfetext"),

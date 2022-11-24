@@ -95,8 +95,6 @@ function add_survey!(root::EzXML.Node, survey::Survey)
     survey_settings = settings(survey)
 
     for (setting, value) in survey_settings
-        @show setting
-        @show value
         add_cdata_node!(survey_node, setting, value)
     end
 

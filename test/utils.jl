@@ -4,7 +4,6 @@
         for x in string.(rand(1:999999, 10))
             @test CitrusBuilder.isnumber(x[rand(1:length(x))]) == true
             @test CitrusBuilder.isalphanumeric(x[rand(1:length(x))]) == true
-            @test CitrusBuilder.validate(x) == false
         end
 
         # letter input
@@ -14,24 +13,7 @@
             x = randstring(letters, 10)
             @test CitrusBuilder.isnumber(x[rand(1:length(x))]) == false
             @test CitrusBuilder.isalphanumeric(x[rand(1:length(x))]) == true
-            @test CitrusBuilder.validate(x) == true
         end
-
-        # Leading number
-        for _ in 1:10
-            x = string(rand(1:9)) * randstring(12)
-            @test CitrusBuilder.validate(x) == false
-        end
-
-        # valid
-        for _ in 1:10
-            x = randstring(letters, 1) * randstring(11)
-            @test CitrusBuilder.validate(x) == true
-        end
-
-        # special characters
-        @test CitrusBuilder.validate("Adf?c_") == false
-        @test CitrusBuilder.validate(" a1") == false
     end
 
     @testset "tovector" begin

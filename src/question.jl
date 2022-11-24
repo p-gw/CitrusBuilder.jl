@@ -31,10 +31,12 @@ A survey component that stores information about LimeSurvey questions.
     subquestions::Vector{SubQuestion} = SubQuestion[]
     options::Vector{ResponseScale} = ResponseScale[]
     function Question(id, type, mandatory, other, relevance, attributes, language_settings, subquestions, options)
-        validate(id) || error("Question codes must start with a letter and may only contain alphanumeric characters.")
+        isvalid_question_id(id) || throw(ArgumentError("Question codes must start with a letter and may only contain alphanumeric characters"))
         return new(id, type, mandatory, other, relevance, attributes, language_settings, subquestions, options)
     end
 end
+
+isvalid_question_id(id::String) = length(id) > 1 && isletter(first(id)) && all(isalphanumeric, id)
 
 """
     is_mandatory(question::Question)
