@@ -92,6 +92,14 @@ function add_survey!(root::EzXML.Node, survey::Survey)
         add_cdata_node!(survey_node, "additional_languages", join(additional_languages, " "))
     end
 
+    survey_settings = settings(survey)
+
+    for (setting, value) in survey_settings
+        @show setting
+        @show value
+        add_cdata_node!(survey_node, setting, value)
+    end
+
     iterator = SurveyIterator(survey.id)
 
     for (group_order, group) in enumerate(children(survey))
