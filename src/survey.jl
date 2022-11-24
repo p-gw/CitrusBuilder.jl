@@ -7,15 +7,19 @@ A type to represent a LimeSurvey.
 - `id::Int`: A valid LimeSurvey survey id
 - `language_settings::LanguageSettings`: The surveys language settings
 - `children::Vector{QuestionGroup}`: A vector of question groups
+- `settings::Dict{String,Any}`: Additional survey settings
 """
 struct Survey <: AbstractSurveyComponent
     id::Int
     language_settings::LanguageSettings
     children::Vector{QuestionGroup}
+    settings::Dict{String,Any}
 end
 
+settings(survey::Survey) = survey.settings
+
 """
-    survey(id, title::String; children)
+    survey(id, title::String; children, settings)
 
 Construct a single-language [`Survey`](@ref).
 `children` is an optional keyword argument and can be omitted.
@@ -41,13 +45,13 @@ my survey (id: 100000)
 └── second question group (id: 2)
 ```
 """
-function survey(id, title::String; children=QuestionGroup[])
-    settings = language_settings(default_language(), title)
-    return Survey(id, settings, children)
+function survey(id, title::String; children=QuestionGroup[], settings=Dict{String,Any}())
+    lsettings = language_settings(default_language(), title)
+    return Survey(id, lsettings, children, settings)
 end
 
 """
-    survey(children::Function, id, title::String)
+    survey(children::Function, id, title::String; settings)
 
 Construct a single-language [`Survey`](@ref) using `do ... end` syntax.
 
@@ -64,12 +68,12 @@ my survey (id: 100000)
 
 ```
 """
-function survey(children::Function, id, title::String)
-    return survey(id, title; children=tovector(children()))
+function survey(children::Function, id, title::String; settings=Dict{String,Any}())
+    return survey(id, title; children=tovector(children()), settings)
 end
 
 """
-    survey(id, language_settings::LanguageSettings; children)
+    survey(id, language_settings::LanguageSettings; children, settings)
 
 Construct a multi-language [`Survey`](@ref).
 `children` is an optional keyword argument and can be omitted.
@@ -99,12 +103,12 @@ A multi-language survey (id: 100000)
 └── first question group (id: 1)
 ```
 """
-function survey(id, language_settings::LanguageSettings; children=QuestionGroup[])
-    return Survey(id, language_settings, children)
+function survey(id, language_settings::LanguageSettings; children=QuestionGroup[], settings=Dict{String,Any}())
+    return Survey(id, language_settings, children, settings)
 end
 
 """
-    survey(children::Function, id, language_settings::LanguageSettings)
+    survey(children::Function, id, language_settings::LanguageSettings; settings)
 
 Construct a multi-language [`Survey`](@ref) using `do ... end` syntax.
 
@@ -125,8 +129,8 @@ A multi-language survey (id: 100000)
 
 ```
 """
-function survey(children::Function, id, language_settings::LanguageSettings)
-    return survey(id, language_settings, children=tovector(children()))
+function survey(children::Function, id, language_settings::LanguageSettings; settings=Dict{String,Any}())
+    return survey(id, language_settings; children=tovector(children()), settings)
 end
 
 function Base.show(io::IO, survey::Survey)

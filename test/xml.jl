@@ -205,6 +205,21 @@
         @test nodename.(survey_data) == ["sid", "language", "additional_languages"]
         @test nodecontent.(survey_data) == ["100001", "en", "de es"]
 
+        # with settings
+        s = survey(100001, "survey title", settings=Dict("mysetting" => 1234))
+        doc = CitrusBuilder.create_document!()
+        docroot = root(doc)
+        CitrusBuilder.add_survey!(docroot, s)
+
+        @test countnodes(docroot) == 1
+        surveys_node = first(nodes(docroot))
+        rows_node = first(nodes(surveys_node))
+        row_node = first(nodes(rows_node))
+        survey_data = nodes(row_node)
+
+        @test nodename.(survey_data) == ["sid", "language", "mysetting"]
+        @test nodecontent.(survey_data) == ["100001", "en", "1234"]
+
         # with question groups
         n_groups = 4
         s = survey(100002, "survey title") do
