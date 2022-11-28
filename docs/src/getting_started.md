@@ -8,13 +8,20 @@ Surveys can be imported by using
 1. LimeSurveys [import functionality](https://manual.limesurvey.org/Surveys_-_introduction#Import_a_survey), or 
 2. the [RemoteControl 2 API](https://manual.limesurvey.org/RemoteControl_2_API).
 
-If you are interested in calling the LimeSurvey RemoteControl 2 API from Julia, you can take a look at [LimeSurveyAPI.jl](https://github.com/p-gw/LimeSurveyAPI.jl).
+If you are interested in calling the LimeSurvey RemoteControl 2 API from Julia, you can take a look at [CitrusAPI.jl](https://github.com/p-gw/CitrusAPI.jl).
 
 ## Installation
-At the current stage CitrusBuilder is under development and is not registered in the Julia General repository. 
-In order to install the package you have to install it from GitHub.
+### Release version
+To install CitrusBuilder from the official Julia package registry simply call 
 
-To install the package open a Julia REPL and execute the following commands, which will install CitrusBuilder from the `main` branch of the GitHub repository.
+```julia
+pkg> add CitrusBuilder
+```
+
+### Development version
+If you require unreleased features or want to develop CitrusBuilder you can install the most recent version from GitHub.
+
+To install the package execute the following commands, which will install CitrusBuilder from the `main` branch of the GitHub repository.
 
 ```julia
 using Pkg

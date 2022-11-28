@@ -48,10 +48,10 @@ A basic survey (id: 123456)
 
 To export your survey simply call `write`,
 
-```
+```julia
 write("my_basic_survey.lss", basic_survey)
 ```
 
-The resulting xml file can be imported on the server using the [LimeSurvey import function](https://manual.limesurvey.org/Surveys_-_introduction#Import_a_survey) or [LimeSurveyAPI.jl](https://github.com/p-gw/LimeSurveyAPI.jl).
+The resulting xml file can be imported on the server using the [LimeSurvey import function](https://manual.limesurvey.org/Surveys_-_introduction#Import_a_survey) or [CitrusAPI.jl](https://github.com/p-gw/CitrusAPI.jl).
 
 For more details on how to use this package, please refer to the [documentation](https://p-gw.github.io/CitrusBuilder.jl/dev).
